@@ -1,0 +1,84 @@
+# Preparation scaffold. Technical pages stay draft until authoring and review.
+training:
+  id: ATS052
+  title: 'CCA: Architecture'
+  description: Preparation scaffold for Architecture. Lessons and environments are planned.
+  certification:
+    name: Cilium Certified Associate
+    code: CCA
+    provider: CNCF / Linux Foundation
+    domain: Architecture
+    weight: 20
+    competencies:
+    - Understand the Role of Cilium in Kubernetes Environments
+    - Cilium Architecture
+    - IP Address Management (IPAM) with Cilium
+    - Cilium Component Roles
+    - Datapath Models
+modules:
+- id: module-intro
+  title: Introduction
+  description: Planned introduction and authoring status.
+  content:
+  - type: reading
+    title: Introduction
+    path: sections/intro/README.md
+  - type: reading
+    title: Welcome To The Course
+    path: sections/intro/course-01-welcome.md
+  - type: reading
+    title: Get Your Machine Ready
+    path: sections/intro/course-02-get-your-machine-ready.md
+  - type: reading
+    title: How This Course Is Made
+    path: sections/intro/course-03-how-this-course-is-made.md
+- id: module-010
+  title: Understand the Role of Cilium in Kubernetes Environments
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-010/README.md
+  - type: reading
+    title: Understand the Role of Cilium in Kubernetes Environments
+    path: sections/section-010/module-01/course.md
+- id: module-020
+  title: Cilium Architecture
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-020/README.md
+  - type: reading
+    title: Cilium Architecture
+    path: sections/section-020/module-01/course.md
+- id: module-030
+  title: IP Address Management (IPAM) with Cilium
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-030/README.md
+  - type: reading
+    title: IP Address Management (IPAM) with Cilium
+    path: sections/section-030/module-01/course.md
+- id: module-040
+  title: Cilium Component Roles
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-040/README.md
+  - type: reading
+    title: Cilium Component Roles
+    path: sections/section-040/module-01/course.md
+- id: module-050
+  title: Datapath Models
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-050/README.md
+  - type: reading
+    title: Datapath Models
+    path: sections/section-050/module-01/course.md
