@@ -1,0 +1,300 @@
+schema_version: 1
+kind: question_bank
+id: ats052-domain-review
+course_id: ATS052
+exam_code: CCA
+status: draft
+provenance: Original practice material; not official examination questions.
+scope:
+  type: domain
+  id: domain-review
+  title: Architecture
+placement:
+  position: after
+  reading: sections/section-050/module-01/course-02-summary.md
+questions:
+- id: ats052-domain-review-q01
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain CNI responsibility and Cilium endpoint management.
+  source_readings:
+  - sections/section-010/module-01/course-01-cilium-s-role-in-kubernetes-networking.md
+  prompt: What does a CNI implementation principally help establish?
+  options:
+  - id: a
+    text: Every container image's source provenance.
+    explanation: Artifact trust requires separate controls.
+  - id: b
+    text: Networking for a Pod's execution environment.
+    explanation: The runtime invokes the networking lifecycle.
+  - id: c
+    text: Application database schema automatically.
+    explanation: That is outside the network plugin's responsibility.
+  correct_option: b
+  explanation: The runtime invokes the networking lifecycle.
+- id: ats052-domain-review-q02
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Distinguish Pod routing, Service translation and policy enforcement.
+  source_readings:
+  - sections/section-010/module-01/course-01-cilium-s-role-in-kubernetes-networking.md
+  prompt: Does successful Pod routing prove a Service selects correct backends?
+  options:
+  - id: a
+    text: No; Service selection and translation are separate relationships.
+    explanation: Direct reachability does not establish Service behavior.
+  - id: b
+    text: Yes; routing rewrites every selector correctly.
+    explanation: Selectors are declared resource relationships.
+  - id: c
+    text: Yes; every reachable Pod is ready automatically.
+    explanation: Readiness is another condition.
+  correct_option: a
+  explanation: Direct reachability does not establish Service behavior.
+- id: ats052-domain-review-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Evaluate optional feature prerequisites rather than assuming every feature is enabled.
+  source_readings:
+  - sections/section-010/module-01/course-01-cilium-s-role-in-kubernetes-networking.md
+  prompt: What must be checked before assuming Cilium provides a particular optional feature?
+  options:
+  - id: a
+    text: Only the project's logo.
+    explanation: A logo does not establish runtime state.
+  - id: b
+    text: Only whether Kubernetes accepts a Namespace.
+    explanation: That does not enable networking features.
+  - id: c
+    text: Its enabled configuration and documented prerequisites.
+    explanation: Capabilities are deployment-dependent.
+  correct_option: c
+  explanation: Capabilities are deployment-dependent.
+- id: ats052-domain-review-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Trace Kubernetes state into agent-managed datapath configuration.
+  source_readings:
+  - sections/section-020/module-01/course-01-desired-networking-state-and-the-programmed-datapath.md
+  prompt: What connects Kubernetes changes to local Cilium behavior?
+  options:
+  - id: a
+    text: The dashboard's refresh timer.
+    explanation: Presentation does not reconcile networking.
+  - id: b
+    text: The node agent observes state and programs relevant datapath configuration.
+    explanation: Stored intent needs implementation.
+  - id: c
+    text: Every packet reads a Deployment YAML file directly.
+    explanation: Per-packet execution uses programmed state.
+  correct_option: b
+  explanation: Stored intent needs implementation.
+- id: ats052-domain-review-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Distinguish control-plane updates from per-packet execution.
+  source_readings:
+  - sections/section-020/module-01/course-01-desired-networking-state-and-the-programmed-datapath.md
+  prompt: Why can existing traffic continue during some control-plane disruptions?
+  options:
+  - id: a
+    text: Previously programmed forwarding state can remain available.
+    explanation: New-state convergence can fail separately.
+  - id: b
+    text: All new workloads are guaranteed ready anyway.
+    explanation: New endpoints may require unavailable allocation or reconciliation.
+  - id: c
+    text: The operator handles every packet synchronously.
+    explanation: The operator is not the per-packet forwarding path.
+  correct_option: a
+  explanation: New-state convergence can fail separately.
+- id: ats052-domain-review-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain eBPF maps, programs and proxy participation.
+  source_readings:
+  - sections/section-020/module-01/course-01-desired-networking-state-and-the-programmed-datapath.md
+  prompt: Why can Envoy still matter in an eBPF-based network?
+  options:
+  - id: a
+    text: eBPF automatically removes all HTTP processing needs.
+    explanation: Features still need appropriate protocol handling.
+  - id: b
+    text: Envoy allocates every Pod IP by definition.
+    explanation: IPAM is a different responsibility.
+  - id: c
+    text: Selected Layer 7 processing uses a proxy.
+    explanation: Kernel networking and application-aware processing have different roles.
+  correct_option: c
+  explanation: Kernel networking and application-aware processing have different roles.
+- id: ats052-domain-review-q07
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain allocation separately from route reachability.
+  source_readings:
+  - sections/section-030/module-01/course-01-address-allocation-pools-and-routing-compatibility.md
+  prompt: Does an allocated Pod address prove other nodes can reach it?
+  options:
+  - id: a
+    text: Yes; policy always allows newly allocated addresses.
+    explanation: Permission remains a separate decision.
+  - id: b
+    text: No; routing must provide reachability separately.
+    explanation: Allocation and forwarding are distinct contracts.
+  - id: c
+    text: Yes; IPAM creates every external route universally.
+    explanation: Routing depends on the selected model and infrastructure.
+  correct_option: b
+  explanation: Allocation and forwarding are distinct contracts.
+- id: ats052-domain-review-q08
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Compare Kubernetes-host-scope and Cilium-managed pool roles.
+  source_readings:
+  - sections/section-030/module-01/course-01-address-allocation-pools-and-routing-compatibility.md
+  prompt: Who supplies node PodCIDRs in Kubernetes host-scope IPAM?
+  options:
+  - id: a
+    text: Kubernetes under that mode's allocation model.
+    explanation: The agent uses the assigned node range.
+  - id: b
+    text: Hubble UI.
+    explanation: The UI observes rather than allocates addresses.
+  - id: c
+    text: Every application request chooses its own global PodCIDR.
+    explanation: Applications do not own that allocation.
+  correct_option: a
+  explanation: The agent uses the assigned node range.
+- id: ats052-domain-review-q09
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Account for cloud-specific allocation and capacity limits.
+  source_readings:
+  - sections/section-030/module-01/course-01-address-allocation-pools-and-routing-compatibility.md
+  prompt: Why can cloud IPAM capacity differ from a theoretical subnet size?
+  options:
+  - id: a
+    text: Every subnet always permits unlimited Pods.
+    explanation: Capacity is finite and constrained.
+  - id: b
+    text: The number of dashboard panels is the only limit.
+    explanation: Presentation has no such allocation authority.
+  - id: c
+    text: Interface, allocation and provider limits can constrain usable addresses.
+    explanation: The cloud-specific implementation has additional dependencies.
+  correct_option: c
+  explanation: The cloud-specific implementation has additional dependencies.
+- id: ats052-domain-review-q10
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Assign endpoint and datapath responsibilities to the agent.
+  source_readings:
+  - sections/section-040/module-01/course-01-agent-operator-cni-and-hubble-responsibilities.md
+  prompt: Which component manages node-local endpoint datapath state?
+  options:
+  - id: a
+    text: The dashboard's database.
+    explanation: That is not Cilium endpoint reconciliation.
+  - id: b
+    text: The Cilium agent.
+    explanation: It runs on the node and programs local networking.
+  - id: c
+    text: Hubble UI.
+    explanation: The UI presents observations.
+  correct_option: b
+  explanation: It runs on the node and programs local networking.
+- id: ats052-domain-review-q11
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Distinguish Hubble server, Relay, CLI and UI.
+  source_readings:
+  - sections/section-040/module-01/course-01-agent-operator-cni-and-hubble-responsibilities.md
+  prompt: What does Hubble Relay add?
+  options:
+  - id: a
+    text: Aggregation of reachable Hubble server observations.
+    explanation: It extends the client's view beyond one local server.
+  - id: b
+    text: Automatic application instrumentation for all traces.
+    explanation: Flow observation differs from application tracing.
+  - id: c
+    text: Mandatory forwarding of every workload packet through Relay.
+    explanation: Relay is an observation path.
+  correct_option: a
+  explanation: It extends the client's view beyond one local server.
+- id: ats052-domain-review-q12
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Separate remote Cilium CLI access from node-local debug access.
+  source_readings:
+  - sections/section-040/module-01/course-01-agent-operator-cni-and-hubble-responsibilities.md
+  prompt: How does cilium-dbg differ from the remote Cilium CLI?
+  options:
+  - id: a
+    text: It is the only Kubernetes scheduler.
+    explanation: Scheduling is a different component responsibility.
+  - id: b
+    text: Both must always run on the application client machine.
+    explanation: Their access and deployment contexts differ.
+  - id: c
+    text: It interacts with local agent debugging state.
+    explanation: The remote CLI manages the cluster through Kubernetes access.
+  correct_option: c
+  explanation: The remote CLI manages the cluster through Kubernetes access.
+- id: ats052-domain-review-q13
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Trace encapsulated and native-routed cross-node traffic.
+  source_readings:
+  - sections/section-050/module-01/course-01-overlay-and-native-routing-packet-paths.md
+  prompt: What does an overlay principally add?
+  options:
+  - id: a
+    text: Guaranteed payload confidentiality by itself.
+    explanation: Encapsulation is not encryption.
+  - id: b
+    text: Encapsulation carrying workload traffic between node endpoints.
+    explanation: It reduces the underlay's need to route every Pod prefix directly.
+  - id: c
+    text: Automatic application-level authorization.
+    explanation: Routing is not business authorization.
+  correct_option: b
+  explanation: It reduces the underlay's need to route every Pod prefix directly.
+- id: ats052-domain-review-q14
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain underlay reachability and Pod-prefix requirements.
+  source_readings:
+  - sections/section-050/module-01/course-01-overlay-and-native-routing-packet-paths.md
+  prompt: What does native routing require?
+  options:
+  - id: a
+    text: A valid route to workload addresses through the chosen infrastructure.
+    explanation: The underlay or host routing must know the path.
+  - id: b
+    text: No return route for any connection.
+    explanation: Bidirectional communication still needs a return path.
+  - id: c
+    text: Every packet to pass through Hubble Relay.
+    explanation: Relay is observability infrastructure.
+  correct_option: a
+  explanation: The underlay or host routing must know the path.
+- id: ats052-domain-review-q15
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Relate MTU, masquerading and return paths to failures.
+  source_readings:
+  - sections/section-050/module-01/course-01-overlay-and-native-routing-packet-paths.md
+  prompt: Why can large requests fail while small ones work?
+  options:
+  - id: a
+    text: A Service selector necessarily changes with payload length.
+    explanation: Selectors do not inspect payload size.
+  - id: b
+    text: Every large request is denied by RBAC automatically.
+    explanation: API authorization is not that packet-size rule.
+  - id: c
+    text: Encapsulation or other overhead can expose an MTU problem.
+    explanation: Small packets may fit while larger ones do not.
+  correct_option: c
+  explanation: Small packets may fit while larger ones do not.
