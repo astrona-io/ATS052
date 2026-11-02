@@ -1,0 +1,124 @@
+version: 1
+approval: CCA requested 2026-10-11; established reading-only scope
+course:
+  id: ATS052
+  certification:
+    name: Cilium Certified Associate
+    code: CCA
+    provider: CNCF / Linux Foundation
+    domain: Architecture
+    weight: 20
+    competencies:
+    - Understand the Role of Cilium in Kubernetes Environments
+    - Cilium Architecture
+    - IP Address Management (IPAM) with Cilium
+    - Cilium Component Roles
+    - Datapath Models
+defaults:
+  playground: false
+  module_lab: false
+  capstone: false
+  section_quiz: false
+  final_quiz: true
+assessment_format: YAML question banks v1, registered in assessments/index.yaml
+sections:
+- id: section-010
+  title: Understand the Role of Cilium in Kubernetes Environments
+  curriculum_item: Understand the Role of Cilium in Kubernetes Environments
+  capstone: false
+  section_quiz: false
+  modules:
+  - id: module-01
+    title: Cilium's Role In Kubernetes Networking
+    objectives:
+    - Explain CNI responsibility and Cilium endpoint management.
+    - Distinguish Pod routing, Service translation and policy enforcement.
+    - Relate identity and observability to the networking implementation.
+    - Evaluate optional feature prerequisites rather than assuming every feature is enabled.
+    outline:
+    - Cilium's Role In Kubernetes Networking
+    playground: false
+    module_lab: false
+    sources:
+    - reading: sections/section-010/module-01/course-01-cilium-s-role-in-kubernetes-networking.md
+      adapted_from: null
+- id: section-020
+  title: Cilium Architecture
+  curriculum_item: Cilium Architecture
+  capstone: false
+  section_quiz: false
+  modules:
+  - id: module-01
+    title: Desired Networking State And The Programmed Datapath
+    objectives:
+    - Trace Kubernetes state into agent-managed datapath configuration.
+    - Distinguish control-plane updates from per-packet execution.
+    - Explain eBPF maps, programs and proxy participation.
+    - Evaluate stale state and prerequisite failures independently.
+    outline:
+    - Desired Networking State And The Programmed Datapath
+    playground: false
+    module_lab: false
+    sources:
+    - reading: sections/section-020/module-01/course-01-desired-networking-state-and-the-programmed-datapath.md
+      adapted_from: null
+- id: section-030
+  title: IP Address Management (IPAM) with Cilium
+  curriculum_item: IP Address Management (IPAM) with Cilium
+  capstone: false
+  section_quiz: false
+  modules:
+  - id: module-01
+    title: Address Allocation, Pools And Routing Compatibility
+    objectives:
+    - Explain allocation separately from route reachability.
+    - Compare Kubernetes-host-scope and Cilium-managed pool roles.
+    - Account for cloud-specific allocation and capacity limits.
+    - Diagnose exhaustion, overlap and incompatible mode changes.
+    outline:
+    - Address Allocation, Pools And Routing Compatibility
+    playground: false
+    module_lab: false
+    sources:
+    - reading: sections/section-030/module-01/course-01-address-allocation-pools-and-routing-compatibility.md
+      adapted_from: null
+- id: section-040
+  title: Cilium Component Roles
+  curriculum_item: Cilium Component Roles
+  capstone: false
+  section_quiz: false
+  modules:
+  - id: module-01
+    title: Agent, Operator, CNI And Hubble Responsibilities
+    objectives:
+    - Assign endpoint and datapath responsibilities to the agent.
+    - Explain operator coordination and CNI lifecycle roles.
+    - Distinguish Hubble server, Relay, CLI and UI.
+    - Separate remote Cilium CLI access from node-local debug access.
+    outline:
+    - Agent, Operator, CNI And Hubble Responsibilities
+    playground: false
+    module_lab: false
+    sources:
+    - reading: sections/section-040/module-01/course-01-agent-operator-cni-and-hubble-responsibilities.md
+      adapted_from: null
+- id: section-050
+  title: Datapath Models
+  curriculum_item: Datapath Models
+  capstone: false
+  section_quiz: false
+  modules:
+  - id: module-01
+    title: Overlay And Native Routing Packet Paths
+    objectives:
+    - Trace encapsulated and native-routed cross-node traffic.
+    - Explain underlay reachability and Pod-prefix requirements.
+    - Relate MTU, masquerading and return paths to failures.
+    - Separate routing model from policy and encryption.
+    outline:
+    - Overlay And Native Routing Packet Paths
+    playground: false
+    module_lab: false
+    sources:
+    - reading: sections/section-050/module-01/course-01-overlay-and-native-routing-packet-paths.md
+      adapted_from: null

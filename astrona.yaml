@@ -1,8 +1,8 @@
-# Preparation scaffold. Technical pages stay draft until authoring and review.
 training:
   id: ATS052
   title: 'CCA: Architecture'
-  description: Preparation scaffold for Architecture. Lessons and environments are planned.
+  description: 'Detailed reading material and reusable YAML knowledge checks for CCA:
+    Architecture. Technical content remains draft. Private playgrounds and draft independent labs are included.'
   certification:
     name: Cilium Certified Associate
     code: CCA
@@ -18,7 +18,7 @@ training:
 modules:
 - id: module-intro
   title: Introduction
-  description: Planned introduction and authoring status.
+  description: Audience, reading method and review process.
   content:
   - type: reading
     title: Introduction
@@ -34,51 +34,193 @@ modules:
     path: sections/intro/course-03-how-this-course-is-made.md
 - id: module-010
   title: Understand the Role of Cilium in Kubernetes Environments
-  description: Planned coverage of this curriculum objective.
+  description: Developed reading and reasoning for Understand the Role of Cilium in
+    Kubernetes Environments.
+  status: alpha
   content:
-  - type: reading
-    title: Section Overview
-    path: sections/section-010/README.md
   - type: reading
     title: Understand the Role of Cilium in Kubernetes Environments
+    path: sections/section-010/README.md
+  - type: reading
+    title: Cilium's Role In Kubernetes Networking
     path: sections/section-010/module-01/course.md
+  - type: reading
+    title: Cilium's Role In Kubernetes Networking
+    path: sections/section-010/module-01/course-01-cilium-s-role-in-kubernetes-networking.md
+  - type: reading
+    title: Find The Installed CNI And Ready Agents — Task
+    path: sections/section-010/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Find The Installed CNI And Ready Agents
+    path: sections/section-010/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: cilium-diagnostics
+    task_kind: build
+    learning_goals:
+    - Identify Cilium as the installed CNI and establish agent readiness.
+    tags:
+    - cca
+    - cilium-diagnostics
+  - type: reading
+    title: Find The Installed CNI And Ready Agents — Solution
+    path: sections/section-010/module-01/labs/lab-01/solution.md
+  - type: reading
+    title: 'Guided Practice: Find The Installed CNI And Ready Agents'
+    path: sections/section-010/module-01/course-02-guided-practice.md
+  - type: reading
+    title: Summary
+    path: sections/section-010/module-01/course-03-summary.md
 - id: module-020
   title: Cilium Architecture
-  description: Planned coverage of this curriculum objective.
+  description: Developed reading and reasoning for Cilium Architecture.
+  status: alpha
   content:
-  - type: reading
-    title: Section Overview
-    path: sections/section-020/README.md
   - type: reading
     title: Cilium Architecture
+    path: sections/section-020/README.md
+  - type: reading
+    title: Desired Networking State And The Programmed Datapath
     path: sections/section-020/module-01/course.md
+  - type: reading
+    title: Desired Networking State And The Programmed Datapath
+    path: sections/section-020/module-01/course-01-desired-networking-state-and-the-programmed-datapath.md
+  - type: reading
+    title: Compare Endpoint Intent With Realised Identity — Task
+    path: sections/section-020/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Compare Endpoint Intent With Realised Identity
+    path: sections/section-020/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: cilium-diagnostics
+    task_kind: build
+    learning_goals:
+    - Map a Pod to its CiliumEndpoint and realised identity.
+    tags:
+    - cca
+    - cilium-diagnostics
+  - type: reading
+    title: Compare Endpoint Intent With Realised Identity — Solution
+    path: sections/section-020/module-01/labs/lab-01/solution.md
+  - type: reading
+    title: 'Guided Practice: Compare Endpoint Intent With Realised Identity'
+    path: sections/section-020/module-01/course-02-guided-practice.md
+  - type: reading
+    title: Summary
+    path: sections/section-020/module-01/course-03-summary.md
 - id: module-030
   title: IP Address Management (IPAM) with Cilium
-  description: Planned coverage of this curriculum objective.
+  description: Developed reading and reasoning for IP Address Management (IPAM) with
+    Cilium.
+  status: alpha
   content:
-  - type: reading
-    title: Section Overview
-    path: sections/section-030/README.md
   - type: reading
     title: IP Address Management (IPAM) with Cilium
+    path: sections/section-030/README.md
+  - type: reading
+    title: Address Allocation, Pools And Routing Compatibility
     path: sections/section-030/module-01/course.md
+  - type: reading
+    title: Address Allocation, Pools And Routing Compatibility
+    path: sections/section-030/module-01/course-01-address-allocation-pools-and-routing-compatibility.md
+  - type: reading
+    title: Check Node PodCIDR Allocations — Task
+    path: sections/section-030/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Check Node PodCIDR Allocations
+    path: sections/section-030/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: cilium-diagnostics
+    task_kind: build
+    learning_goals:
+    - Verify distinct Kubernetes PodCIDRs used by Cilium IPAM.
+    tags:
+    - cca
+    - cilium-diagnostics
+  - type: reading
+    title: Check Node PodCIDR Allocations — Solution
+    path: sections/section-030/module-01/labs/lab-01/solution.md
+  - type: reading
+    title: 'Guided Practice: Check Node PodCIDR Allocations'
+    path: sections/section-030/module-01/course-02-guided-practice.md
+  - type: reading
+    title: Summary
+    path: sections/section-030/module-01/course-03-summary.md
 - id: module-040
   title: Cilium Component Roles
-  description: Planned coverage of this curriculum objective.
+  description: Developed reading and reasoning for Cilium Component Roles.
+  status: alpha
   content:
-  - type: reading
-    title: Section Overview
-    path: sections/section-040/README.md
   - type: reading
     title: Cilium Component Roles
+    path: sections/section-040/README.md
+  - type: reading
+    title: Agent, Operator, CNI And Hubble Responsibilities
     path: sections/section-040/module-01/course.md
+  - type: reading
+    title: Agent, Operator, CNI And Hubble Responsibilities
+    path: sections/section-040/module-01/course-01-agent-operator-cni-and-hubble-responsibilities.md
+  - type: reading
+    title: Separate Agent Operator And Relay Roles — Task
+    path: sections/section-040/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Separate Agent Operator And Relay Roles
+    path: sections/section-040/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: cilium-diagnostics
+    task_kind: build
+    learning_goals:
+    - Record the images of three different Cilium components.
+    tags:
+    - cca
+    - cilium-diagnostics
+  - type: reading
+    title: Separate Agent Operator And Relay Roles — Solution
+    path: sections/section-040/module-01/labs/lab-01/solution.md
+  - type: reading
+    title: 'Guided Practice: Separate Agent Operator And Relay Roles'
+    path: sections/section-040/module-01/course-02-guided-practice.md
+  - type: reading
+    title: Summary
+    path: sections/section-040/module-01/course-03-summary.md
 - id: module-050
   title: Datapath Models
-  description: Planned coverage of this curriculum objective.
+  description: Developed reading and reasoning for Datapath Models.
+  status: alpha
   content:
   - type: reading
-    title: Section Overview
+    title: Datapath Models
     path: sections/section-050/README.md
   - type: reading
-    title: Datapath Models
+    title: Overlay And Native Routing Packet Paths
     path: sections/section-050/module-01/course.md
+  - type: reading
+    title: Overlay And Native Routing Packet Paths
+    path: sections/section-050/module-01/course-01-overlay-and-native-routing-packet-paths.md
+  - type: reading
+    title: Diagnose Overlay Routing Configuration — Task
+    path: sections/section-050/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Diagnose Overlay Routing Configuration
+    path: sections/section-050/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: cilium-diagnostics
+    task_kind: build
+    learning_goals:
+    - Identify the active routing mode and tunnel protocol.
+    tags:
+    - cca
+    - cilium-diagnostics
+  - type: reading
+    title: Diagnose Overlay Routing Configuration — Solution
+    path: sections/section-050/module-01/labs/lab-01/solution.md
+  - type: reading
+    title: 'Guided Practice: Diagnose Overlay Routing Configuration'
+    path: sections/section-050/module-01/course-02-guided-practice.md
+  - type: reading
+    title: Summary
+    path: sections/section-050/module-01/course-03-summary.md
