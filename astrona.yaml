@@ -36,7 +36,7 @@ modules:
   title: Understand the Role of Cilium in Kubernetes Environments
   description: Developed reading and reasoning for Understand the Role of Cilium in
     Kubernetes Environments.
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: Understand the Role of Cilium in Kubernetes Environments
@@ -74,7 +74,7 @@ modules:
 - id: module-020
   title: Cilium Architecture
   description: Developed reading and reasoning for Cilium Architecture.
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: Cilium Architecture
@@ -113,7 +113,7 @@ modules:
   title: IP Address Management (IPAM) with Cilium
   description: Developed reading and reasoning for IP Address Management (IPAM) with
     Cilium.
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: IP Address Management (IPAM) with Cilium
@@ -151,7 +151,7 @@ modules:
 - id: module-040
   title: Cilium Component Roles
   description: Developed reading and reasoning for Cilium Component Roles.
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: Cilium Component Roles
@@ -189,7 +189,7 @@ modules:
 - id: module-050
   title: Datapath Models
   description: Developed reading and reasoning for Datapath Models.
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: Datapath Models
