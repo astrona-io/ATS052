@@ -1,11 +1,12 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Repair A Policy Through Pod Labels (LAB). UNTESTED: static checks only. Graded against the live cluster.
 apiVersion: astrona.io/v1
 metadata:
   name: ats-052-lab-020-01-01
   docs:
-    prerequisites: docs/prerequisites.md
-    examQuestion: question.md
-    caseStudy: docs/case-study.md
-    guide: solution.md
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
 runtime:
   type: kind
   kind:
@@ -17,18 +18,37 @@ runtime:
       podSubnet: 10.244.0.0/16
 bootstrap:
   init:
-  - name: seed-private-environment
+  - name: install-cilium-and-seed
+    description: "A CiliumNetworkPolicy `probe-from-clients` allows ingress to `probe` only from pods labelled `role: client`. The `shuttle` pod has no such label."
     type: file
     source: bootstrap/setup.sh
-teardown:
-  keepCluster: false
 testing:
   init:
-  - name: reference-result
+  - name: apply-reference-solution
+    description: Apply the reference solution
     type: file
     source: solution/apply.sh
 validation:
-  script:
-    name: verify-fields-and-live-evidence
+  scripts:
+  - name: shuttle-has-client-label
+    description: "The shuttle pod carries the label role=client"
     type: file
-    source: validate.sh
+    source: validation/validate-shuttle-has-client-label.sh
+    hint: "Label the pod, not the policy."
+  - name: policy-is-unchanged
+    description: "The CiliumNetworkPolicy still selects role: client and port 9898"
+    type: file
+    source: validation/validate-policy-is-unchanged.sh
+    hint: "Do not edit probe-from-clients."
+  - name: shuttle-reaches-probe
+    description: "shuttle receives HTTP 200 from the probe Service"
+    type: file
+    source: validation/validate-shuttle-reaches-probe.sh
+    hint: "After the label, wait a few seconds for the agent to update the identity."
+  - name: drifter-stays-blocked
+    description: "drifter still cannot reach probe"
+    type: file
+    source: validation/validate-drifter-stays-blocked.sh
+    hint: "The policy only matches pods in starfleet."
+teardown:
+  keepCluster: false

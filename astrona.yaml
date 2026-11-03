@@ -1,8 +1,7 @@
 training:
   id: ATS052
   title: 'CCA: Architecture'
-  description: 'Detailed reading material and reusable YAML knowledge checks for CCA:
-    Architecture. Technical content remains draft. Private playgrounds and draft independent labs are included.'
+  description: 'Reading material, labs, playgrounds and knowledge checks for CCA: Architecture. Technical content is draft, and the labs have not been run yet.'
   certification:
     name: Cilium Certified Associate
     code: CCA
@@ -33,194 +32,528 @@ modules:
     title: How This Course Is Made
     path: sections/intro/course-03-how-this-course-is-made.md
 - id: module-010
-  title: Understand the Role of Cilium in Kubernetes Environments
-  description: Developed reading and reasoning for Understand the Role of Cilium in
-    Kubernetes Environments.
-  maturity: alpha
+  title: "Understand the Role of Cilium in Kubernetes Environments"
+  description: "Explains what Cilium does in a cluster: the CNI contract, the eBPF datapath, the path of pod and Service traffic and identity-based policy."
+  status: alpha
   content:
   - type: reading
-    title: Understand the Role of Cilium in Kubernetes Environments
+    title: "Understand the Role of Cilium in Kubernetes Environments"
     path: sections/section-010/README.md
   - type: reading
-    title: Cilium's Role In Kubernetes Networking
+    title: "The Role Of Cilium In Kubernetes Networking"
     path: sections/section-010/module-01/course.md
   - type: reading
-    title: Cilium's Role In Kubernetes Networking
-    path: sections/section-010/module-01/course-01-cilium-s-role-in-kubernetes-networking.md
+    title: "What A CNI Plugin Does And What Cilium Adds"
+    path: sections/section-010/module-01/course-01-what-a-cni-plugin-does.md
   - type: reading
-    title: Find The Installed CNI And Ready Agents — Task
+    title: "eBPF And The Cilium Datapath"
+    path: sections/section-010/module-01/course-02-ebpf-and-the-cilium-datapath.md
+  - type: reading
+    title: "Record What Cilium Runs On The Cluster - Task"
     path: sections/section-010/module-01/labs/lab-01/question.md
   - type: lab
-    title: Find The Installed CNI And Ready Agents
+    title: "Record What Cilium Runs On The Cluster"
     path: sections/section-010/module-01/labs/lab-01
     difficulty: intermediate
-    estimated_duration: 25m
-    topic: cilium-diagnostics
+    estimated_duration: 30m
+    topic: cilium-architecture
     task_kind: build
     learning_goals:
-    - Identify Cilium as the installed CNI and establish agent readiness.
+    - "The report names the live agent image"
+    - "The report holds the live number of ready agents"
+    - "The report holds the live identity of the drifter"
     tags:
     - cca
-    - cilium-diagnostics
+    - cilium-architecture
   - type: reading
-    title: Find The Installed CNI And Ready Agents — Solution
-    path: sections/section-010/module-01/labs/lab-01/solution.md
-  - type: reading
-    title: 'Guided Practice: Find The Installed CNI And Ready Agents'
-    path: sections/section-010/module-01/course-02-guided-practice.md
-  - type: reading
-    title: Summary
+    title: "Summary"
     path: sections/section-010/module-01/course-03-summary.md
+  - type: reading
+    title: "Where Cilium Acts: Services, Pods And Policy"
+    path: sections/section-010/module-02/course.md
+  - type: reading
+    title: "The Path Of Pod And Service Traffic"
+    path: sections/section-010/module-02/course-01-the-path-of-pod-and-service-traffic.md
+  - type: reading
+    title: "Policy And Identity-Based Rules"
+    path: sections/section-010/module-02/course-02-policy-and-identity-based-rules.md
+  - type: reading
+    title: "Separate Service Selection From Policy - Task"
+    path: sections/section-010/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Separate Service Selection From Policy"
+    path: sections/section-010/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The Service probe selects the probe pods and has endpoints"
+    - "A CiliumNetworkPolicy probe-ingress protects the probe pods on port 9898"
+    - "shuttle receives HTTP 200 from the probe Service"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: reading
+    title: "Summary"
+    path: sections/section-010/module-02/course-03-summary.md
+  - type: reading
+    title: "Role Of Cilium Capstone - Task"
+    path: sections/section-010/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Role Of Cilium Capstone"
+    path: sections/section-010/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 60m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The Service has two endpoint addresses"
+    - "shuttle reaches probe, drifter does not, through a CiliumNetworkPolicy"
+    - "The report holds the live endpoint count"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: quiz
+    title: "Knowledge Check: Understand the Role of Cilium in Kubernetes Environments"
+    path: sections/section-010/quiz.yaml
+    pass_score: 70
 - id: module-020
-  title: Cilium Architecture
-  description: Developed reading and reasoning for Cilium Architecture.
-  maturity: alpha
+  title: "Cilium Architecture"
+  description: "Explains security identities, how the datapath uses them, the endpoint of each pod and the difference between desired and realised state."
+  status: alpha
   content:
   - type: reading
-    title: Cilium Architecture
+    title: "Cilium Architecture"
     path: sections/section-020/README.md
   - type: reading
-    title: Desired Networking State And The Programmed Datapath
+    title: "Security Identities In Cilium"
     path: sections/section-020/module-01/course.md
   - type: reading
-    title: Desired Networking State And The Programmed Datapath
-    path: sections/section-020/module-01/course-01-desired-networking-state-and-the-programmed-datapath.md
+    title: "Labels Become Security Identities"
+    path: sections/section-020/module-01/course-01-labels-become-security-identities.md
   - type: reading
-    title: Compare Endpoint Intent With Realised Identity — Task
+    title: "Identity In The Datapath"
+    path: sections/section-020/module-01/course-02-identity-in-the-datapath.md
+  - type: reading
+    title: "Repair A Policy Through Pod Labels - Task"
     path: sections/section-020/module-01/labs/lab-01/question.md
   - type: lab
-    title: Compare Endpoint Intent With Realised Identity
+    title: "Repair A Policy Through Pod Labels"
     path: sections/section-020/module-01/labs/lab-01
     difficulty: intermediate
-    estimated_duration: 25m
-    topic: cilium-diagnostics
+    estimated_duration: 30m
+    topic: cilium-architecture
     task_kind: build
     learning_goals:
-    - Map a Pod to its CiliumEndpoint and realised identity.
+    - "The shuttle pod carries the label role=client"
+    - "The CiliumNetworkPolicy still selects role: client and port 9898"
+    - "shuttle receives HTTP 200 from the probe Service"
     tags:
     - cca
-    - cilium-diagnostics
+    - cilium-architecture
   - type: reading
-    title: Compare Endpoint Intent With Realised Identity — Solution
-    path: sections/section-020/module-01/labs/lab-01/solution.md
-  - type: reading
-    title: 'Guided Practice: Compare Endpoint Intent With Realised Identity'
-    path: sections/section-020/module-01/course-02-guided-practice.md
-  - type: reading
-    title: Summary
+    title: "Summary"
     path: sections/section-020/module-01/course-03-summary.md
+  - type: reading
+    title: "Endpoints And The State Of The Datapath"
+    path: sections/section-020/module-02/course.md
+  - type: reading
+    title: "Endpoints And Their Lifecycle"
+    path: sections/section-020/module-02/course-01-endpoints-and-their-lifecycle.md
+  - type: reading
+    title: "Desired And Realised State"
+    path: sections/section-020/module-02/course-02-desired-and-realised-state.md
+  - type: reading
+    title: "Read Endpoint State From Cilium Objects - Task"
+    path: sections/section-020/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Read Endpoint State From Cilium Objects"
+    path: sections/section-020/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The report holds the live endpoint ID of probe"
+    - "The report holds the live identity of probe"
+    - "The report holds the live endpoint state of probe"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: reading
+    title: "Summary"
+    path: sections/section-020/module-02/course-03-summary.md
+  - type: reading
+    title: "Cilium Architecture Capstone - Task"
+    path: sections/section-020/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Cilium Architecture Capstone"
+    path: sections/section-020/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 60m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The policy is unchanged and shuttle reaches probe"
+    - "drifter cannot reach probe"
+    - "The report holds the live identity of shuttle after the fix"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: quiz
+    title: "Knowledge Check: Cilium Architecture"
+    path: sections/section-020/quiz.yaml
+    pass_score: 70
 - id: module-030
-  title: IP Address Management (IPAM) with Cilium
-  description: Developed reading and reasoning for IP Address Management (IPAM) with
-    Cilium.
-  maturity: alpha
+  title: "IP Address Management (IPAM) with Cilium"
+  description: "Explains cluster-pool IPAM, the other IPAM modes, how node ranges and pod addresses are allocated and how multi-pool IPAM selects a pool."
+  status: alpha
   content:
   - type: reading
-    title: IP Address Management (IPAM) with Cilium
+    title: "IP Address Management (IPAM) with Cilium"
     path: sections/section-030/README.md
   - type: reading
-    title: Address Allocation, Pools And Routing Compatibility
+    title: "IPAM Modes And Cluster Pool"
     path: sections/section-030/module-01/course.md
   - type: reading
-    title: Address Allocation, Pools And Routing Compatibility
-    path: sections/section-030/module-01/course-01-address-allocation-pools-and-routing-compatibility.md
+    title: "Cluster Pool Mode"
+    path: sections/section-030/module-01/course-01-cluster-pool-mode.md
   - type: reading
-    title: Check Node PodCIDR Allocations — Task
+    title: "Other IPAM Modes And How To Choose"
+    path: sections/section-030/module-01/course-02-other-ipam-modes.md
+  - type: reading
+    title: "Record The IPAM Mode And Pool Settings - Task"
     path: sections/section-030/module-01/labs/lab-01/question.md
   - type: lab
-    title: Check Node PodCIDR Allocations
+    title: "Record The IPAM Mode And Pool Settings"
     path: sections/section-030/module-01/labs/lab-01
     difficulty: intermediate
-    estimated_duration: 25m
-    topic: cilium-diagnostics
+    estimated_duration: 30m
+    topic: cilium-architecture
     task_kind: build
     learning_goals:
-    - Verify distinct Kubernetes PodCIDRs used by Cilium IPAM.
+    - "The report names the live IPAM mode"
+    - "The report holds the live pool CIDR"
+    - "The report holds the live mask size"
     tags:
     - cca
-    - cilium-diagnostics
+    - cilium-architecture
   - type: reading
-    title: Check Node PodCIDR Allocations — Solution
-    path: sections/section-030/module-01/labs/lab-01/solution.md
-  - type: reading
-    title: 'Guided Practice: Check Node PodCIDR Allocations'
-    path: sections/section-030/module-01/course-02-guided-practice.md
-  - type: reading
-    title: Summary
+    title: "Summary"
     path: sections/section-030/module-01/course-03-summary.md
+  - type: reading
+    title: "From Node Range To Pod Address"
+    path: sections/section-030/module-02/course.md
+  - type: reading
+    title: "How The Operator Allocates Node Ranges"
+    path: sections/section-030/module-02/course-01-how-the-operator-allocates-node-ranges.md
+  - type: reading
+    title: "How The Agent Assigns Pod Addresses"
+    path: sections/section-030/module-02/course-02-how-the-agent-assigns-pod-addresses.md
+  - type: reading
+    title: "Trace A Pod Address To Its Node Allocation - Task"
+    path: sections/section-030/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Trace A Pod Address To Its Node Allocation"
+    path: sections/section-030/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The report holds the live pod IP"
+    - "The report names the live node of the pod"
+    - "The report holds the CiliumNode slice of that node"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: reading
+    title: "Summary"
+    path: sections/section-030/module-02/course-03-summary.md
+  - type: reading
+    title: "Multi-Pool IPAM"
+    path: sections/section-030/module-03/course.md
+  - type: reading
+    title: "Pools And Pool Selection"
+    path: sections/section-030/module-03/course-01-pools-and-pool-selection.md
+  - type: reading
+    title: "Requirements, Limits And Moving Workloads"
+    path: sections/section-030/module-03/course-02-requirements-limits-and-moving-workloads.md
+  - type: reading
+    title: "Select A Pod IP Pool For A Namespace - Task"
+    path: sections/section-030/module-03/labs/lab-01/question.md
+  - type: lab
+    title: "Select A Pod IP Pool For A Namespace"
+    path: sections/section-030/module-03/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The namespace outpost selects the pool green"
+    - "The running drifter pod has an address from 10.20.0.0/16"
+    - "The shuttle pod still uses the default pool and the pools are unchanged"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: reading
+    title: "Summary"
+    path: sections/section-030/module-03/course-03-summary.md
+  - type: reading
+    title: "IPAM Capstone - Task"
+    path: sections/section-030/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "IPAM Capstone"
+    path: sections/section-030/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 60m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The pool amber has the CIDR 10.30.0.0/16 and mask size 24"
+    - "The probe pod template selects the pool amber"
+    - "Every running probe pod has an address from 10.30.0.0/16"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: quiz
+    title: "Knowledge Check: IP Address Management (IPAM) with Cilium"
+    path: sections/section-030/quiz.yaml
+    pass_score: 70
 - id: module-040
-  title: Cilium Component Roles
-  description: Developed reading and reasoning for Cilium Component Roles.
-  maturity: alpha
+  title: "Cilium Component Roles"
+  description: "Explains the Cilium agent, the operator, the CNI plugin and Hubble with its relay, and what each component is responsible for."
+  status: alpha
   content:
   - type: reading
-    title: Cilium Component Roles
+    title: "Cilium Component Roles"
     path: sections/section-040/README.md
   - type: reading
-    title: Agent, Operator, CNI And Hubble Responsibilities
+    title: "The Cilium Agent"
     path: sections/section-040/module-01/course.md
   - type: reading
-    title: Agent, Operator, CNI And Hubble Responsibilities
-    path: sections/section-040/module-01/course-01-agent-operator-cni-and-hubble-responsibilities.md
+    title: "What The Agent Does On Every Node"
+    path: sections/section-040/module-01/course-01-what-the-agent-does-on-every-node.md
   - type: reading
-    title: Separate Agent Operator And Relay Roles — Task
+    title: "Configuration, Restarts And Debugging"
+    path: sections/section-040/module-01/course-02-configuration-restarts-and-debugging.md
+  - type: reading
+    title: "Change Agent Settings And Restart The Agents - Task"
     path: sections/section-040/module-01/labs/lab-01/question.md
   - type: lab
-    title: Separate Agent Operator And Relay Roles
+    title: "Change Agent Settings And Restart The Agents"
     path: sections/section-040/module-01/labs/lab-01
     difficulty: intermediate
-    estimated_duration: 25m
-    topic: cilium-diagnostics
+    estimated_duration: 30m
+    topic: cilium-architecture
     task_kind: build
     learning_goals:
-    - Record the images of three different Cilium components.
+    - "The key debug in cilium-config is \"true\""
+    - "The DaemonSet was restarted after the change"
+    - "One ready agent runs on every node"
     tags:
     - cca
-    - cilium-diagnostics
+    - cilium-architecture
   - type: reading
-    title: Separate Agent Operator And Relay Roles — Solution
-    path: sections/section-040/module-01/labs/lab-01/solution.md
-  - type: reading
-    title: 'Guided Practice: Separate Agent Operator And Relay Roles'
-    path: sections/section-040/module-01/course-02-guided-practice.md
-  - type: reading
-    title: Summary
+    title: "Summary"
     path: sections/section-040/module-01/course-03-summary.md
+  - type: reading
+    title: "The Operator And The CNI Plugin"
+    path: sections/section-040/module-02/course.md
+  - type: reading
+    title: "The Cilium Operator"
+    path: sections/section-040/module-02/course-01-the-cilium-operator.md
+  - type: reading
+    title: "The CNI Plugin And Pod Creation"
+    path: sections/section-040/module-02/course-02-the-cni-plugin-and-pod-creation.md
+  - type: reading
+    title: "Run The Operator In High Availability - Task"
+    path: sections/section-040/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Run The Operator In High Availability"
+    path: sections/section-040/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The operator Deployment has two available replicas"
+    - "The two operator pods run on different nodes"
+    - "The report holds the live operator image"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: reading
+    title: "Summary"
+    path: sections/section-040/module-02/course-03-summary.md
+  - type: reading
+    title: "Hubble And Hubble Relay"
+    path: sections/section-040/module-03/course.md
+  - type: reading
+    title: "The Hubble Server And Flows"
+    path: sections/section-040/module-03/course-01-the-hubble-server-and-flows.md
+  - type: reading
+    title: "Hubble Relay, The Peer Service And The UI"
+    path: sections/section-040/module-03/course-02-hubble-relay-peer-service-and-ui.md
+  - type: reading
+    title: "Restore Hubble Relay And Read Its Service - Task"
+    path: sections/section-040/module-03/labs/lab-01/question.md
+  - type: lab
+    title: "Restore Hubble Relay And Read Its Service"
+    path: sections/section-040/module-03/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "Hubble Relay has one available replica"
+    - "The Service hubble-relay has an endpoint address"
+    - "The report holds the live relay Service port"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: reading
+    title: "Summary"
+    path: sections/section-040/module-03/course-03-summary.md
+  - type: reading
+    title: "Component Roles Capstone - Task"
+    path: sections/section-040/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Component Roles Capstone"
+    path: sections/section-040/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 60m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "Two operator replicas run on two different nodes"
+    - "Debug is on, the agents were restarted and all are ready"
+    - "Hubble Relay is available and its Service has an endpoint"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: quiz
+    title: "Knowledge Check: Cilium Component Roles"
+    path: sections/section-040/quiz.yaml
+    pass_score: 70
 - id: module-050
-  title: Datapath Models
-  description: Developed reading and reasoning for Datapath Models.
-  maturity: alpha
+  title: "Datapath Models"
+  description: "Explains overlay routing, native routing, route distribution, masquerading, kube-proxy replacement and how to choose a datapath model."
+  status: alpha
   content:
   - type: reading
-    title: Datapath Models
+    title: "Datapath Models"
     path: sections/section-050/README.md
   - type: reading
-    title: Overlay And Native Routing Packet Paths
+    title: "Overlay Routing"
     path: sections/section-050/module-01/course.md
   - type: reading
-    title: Overlay And Native Routing Packet Paths
-    path: sections/section-050/module-01/course-01-overlay-and-native-routing-packet-paths.md
+    title: "Encapsulation And The Overlay Datapath"
+    path: sections/section-050/module-01/course-01-encapsulation-and-the-overlay-datapath.md
   - type: reading
-    title: Diagnose Overlay Routing Configuration — Task
+    title: "VXLAN, Geneve And The MTU"
+    path: sections/section-050/module-01/course-02-vxlan-geneve-and-the-mtu.md
+  - type: reading
+    title: "Record Overlay Routing Settings And Node Placement - Task"
     path: sections/section-050/module-01/labs/lab-01/question.md
   - type: lab
-    title: Diagnose Overlay Routing Configuration
+    title: "Record Overlay Routing Settings And Node Placement"
     path: sections/section-050/module-01/labs/lab-01
     difficulty: intermediate
-    estimated_duration: 25m
-    topic: cilium-diagnostics
+    estimated_duration: 30m
+    topic: cilium-architecture
     task_kind: build
     learning_goals:
-    - Identify the active routing mode and tunnel protocol.
+    - "The report holds the live routing mode"
+    - "The report holds the live tunnel protocol"
+    - "The report names the nodes of probe and shuttle"
     tags:
     - cca
-    - cilium-diagnostics
+    - cilium-architecture
   - type: reading
-    title: Diagnose Overlay Routing Configuration — Solution
-    path: sections/section-050/module-01/labs/lab-01/solution.md
-  - type: reading
-    title: 'Guided Practice: Diagnose Overlay Routing Configuration'
-    path: sections/section-050/module-01/course-02-guided-practice.md
-  - type: reading
-    title: Summary
+    title: "Summary"
     path: sections/section-050/module-01/course-03-summary.md
+  - type: reading
+    title: "Native Routing"
+    path: sections/section-050/module-02/course.md
+  - type: reading
+    title: "Requirements And Settings Of Native Routing"
+    path: sections/section-050/module-02/course-01-requirements-and-settings-of-native-routing.md
+  - type: reading
+    title: "Route Distribution, BGP And Masquerading"
+    path: sections/section-050/module-02/course-02-route-distribution-bgp-and-masquerading.md
+  - type: reading
+    title: "Fix Native Routing Between Nodes - Task"
+    path: sections/section-050/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Fix Native Routing Between Nodes"
+    path: sections/section-050/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "auto-direct-node-routes is \"true\" and routing stays native"
+    - "The agents were restarted and are ready"
+    - "shuttle reaches probe across nodes"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: reading
+    title: "Summary"
+    path: sections/section-050/module-02/course-03-summary.md
+  - type: reading
+    title: "Comparing Datapath Models"
+    path: sections/section-050/module-03/course.md
+  - type: reading
+    title: "Choosing A Datapath Model"
+    path: sections/section-050/module-03/course-01-choosing-a-datapath-model.md
+  - type: reading
+    title: "Kube-Proxy Replacement And Masquerading"
+    path: sections/section-050/module-03/course-02-kube-proxy-replacement-and-masquerading.md
+  - type: reading
+    title: "Verify The Datapath Model Of A Cluster - Task"
+    path: sections/section-050/module-03/labs/lab-01/question.md
+  - type: lab
+    title: "Verify The Datapath Model Of A Cluster"
+    path: sections/section-050/module-03/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "The report holds the live value of routing-mode"
+    - "The report holds the live value of ipv4-native-routing-cidr"
+    - "The report holds the live value of auto-direct-node-routes"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: reading
+    title: "Summary"
+    path: sections/section-050/module-03/course-03-summary.md
+  - type: reading
+    title: "Datapath Models Capstone - Task"
+    path: sections/section-050/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Datapath Models Capstone"
+    path: sections/section-050/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 60m
+    topic: cilium-architecture
+    task_kind: build
+    learning_goals:
+    - "Routing stays native and direct node routes are enabled"
+    - "shuttle reaches probe across nodes"
+    - "The report holds the live routing settings"
+    tags:
+    - cca
+    - cilium-architecture
+  - type: quiz
+    title: "Knowledge Check: Datapath Models"
+    path: sections/section-050/quiz.yaml
+    pass_score: 70
+  - type: quiz
+    title: "Final Knowledge Check: Architecture"
+    path: sections/final-domain-quiz.yaml
+    pass_score: 70

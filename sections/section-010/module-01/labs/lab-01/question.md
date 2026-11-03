@@ -3,33 +3,22 @@ draft: true
 exam_objectives:
 - Understand the Role of Cilium in Kubernetes Environments
 ---
-# Find The Installed CNI And Ready Agents
+# Record What Cilium Runs On The Cluster
 
-Identify Cilium as the installed CNI and establish agent readiness.
+Solve this question on: `terminal`
 
-## Starting state
+The `starfleet` namespace and the `outpost` namespace are running on a cluster that uses Cilium as its network plugin. The platform team wants a short report of what Cilium runs and how it sees the `drifter` workload in `outpost`. Read the values from the live cluster. Do not guess them.
 
-Cilium manages the private two-node cluster. Hubble Relay and the BGP control plane are enabled. The probe and two clients are healthy; no learner policy or evidence report exists. This baseline uses kube-proxy and tunnelling.
-
-Use a host shell with the private kubeconfig for this independent kind environment. A kubeconfig identifies the cluster and credentials used by kubectl, the Kubernetes command-line tool.
+Connect to the cluster first. A kubeconfig is the file that tells `kubectl` which cluster and credentials to use.
 
 ```sh
 export KUBECONFIG="$(astrona kubeconfig ats-052-lab-010-01-01)"
-test "$(kubectl config current-context)" = "kind-astro-ats-052-lab-010-01-01" || exit 1
-node_name="astro-ats-052-lab-010-01-01-control-plane"
-worker_name="astro-ats-052-lab-010-01-01-worker"
 ```
 
-Keep this connection selected. Host-level commands name only this environment's node containers. They do not operate on the host operating system.
+Create the ConfigMap `cni-evidence` in the namespace `starfleet` with these three keys:
 
-## Required result
+1. `agent-image`: the container image of the container `cilium-agent` in the DaemonSet `cilium` in `kube-system`.
+2. `ready-agents`: the number of Cilium agent pods that are ready, taken from the status of that DaemonSet.
+3. `drifter-identity`: the numeric security identity that Cilium assigned to the Pod `drifter` in `outpost`. Cilium stores it in the CiliumEndpoint object with the same name and namespace as the Pod.
 
-Record the agent image and the number of ready nodes. Kubernetes object presence alone does not prove endpoint connectivity; run a probe request before recording the result.
-
-Record observations in `starfleet/evidence`, whose `report.json` contains the stated report. The verifier reads the live API again; invented values do not pass.
-
-The report object uses these fields: `agent_image`, `ready_agents`, `response`. Keep numeric values numeric and preserve arrays and nested objects returned by the API.
-
-## Verify The Result
-
-The grader checks the required object fields and actual observations. Wait for controller convergence before submitting. Preserve the task's namespace, workload names and unrelated components.
+The grader reads the same values from the live API and compares them with your ConfigMap. Do not change any Cilium object or any workload.

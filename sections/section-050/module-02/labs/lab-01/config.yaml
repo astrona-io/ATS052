@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Fix Native Routing Between Nodes (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-050-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "Cilium uses native routing with `auto-direct-node-routes` set to `\"false\"`. No node has a route to the pod CIDR of the other node, so `shuttle` cannot reach `probe`."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: direct-node-routes-enabled
+    description: "auto-direct-node-routes is \"true\" and routing stays native"
+    type: file
+    source: validation/validate-direct-node-routes-enabled.sh
+    hint: "Patch cilium-config; keep routing-mode native."
+  - name: agents-restarted-and-ready
+    description: "The agents were restarted and are ready"
+    type: file
+    source: validation/validate-agents-restarted-and-ready.sh
+    hint: "Roll out the DaemonSet cilium after the change."
+  - name: cross-node-request-works
+    description: "shuttle reaches probe across nodes"
+    type: file
+    source: validation/validate-cross-node-request-works.sh
+    hint: "Wait a few seconds after the restart."
+teardown:
+  keepCluster: false

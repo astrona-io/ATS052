@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Separate Service Selection From Policy (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-010-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "The Service `probe` selects pods with the label `app: probe-api`, but the pods carry `app: probe`. No network policy exists."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: service-has-backends
+    description: "The Service probe selects the probe pods and has endpoints"
+    type: file
+    source: validation/validate-service-has-backends.sh
+    hint: "Compare spec.selector of the Service with the pod labels, then patch the Service."
+  - name: policy-is-cilium-policy
+    description: "A CiliumNetworkPolicy probe-ingress protects the probe pods on port 9898"
+    type: file
+    source: validation/validate-policy-is-cilium-policy.sh
+    hint: "Create kind CiliumNetworkPolicy named probe-ingress in starfleet with endpointSelector app: probe."
+  - name: shuttle-reaches-probe
+    description: "shuttle receives HTTP 200 from the probe Service"
+    type: file
+    source: validation/validate-shuttle-reaches-probe.sh
+    hint: "Fix the Service selector first, then check that the policy allows the starfleet namespace."
+  - name: drifter-is-blocked
+    description: "drifter cannot reach the probe Service"
+    type: file
+    source: validation/validate-drifter-is-blocked.sh
+    hint: "The policy must allow only the starfleet namespace as a source."
+teardown:
+  keepCluster: false

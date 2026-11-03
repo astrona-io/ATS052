@@ -1,11 +1,12 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Record Overlay Routing Settings And Node Placement (LAB). UNTESTED: static checks only. Graded against the live cluster.
 apiVersion: astrona.io/v1
 metadata:
   name: ats-052-lab-050-01-01
   docs:
-    prerequisites: docs/prerequisites.md
-    examQuestion: question.md
-    caseStudy: docs/case-study.md
-    guide: solution.md
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
 runtime:
   type: kind
   kind:
@@ -17,18 +18,37 @@ runtime:
       podSubnet: 10.244.0.0/16
 bootstrap:
   init:
-  - name: seed-private-environment
+  - name: install-cilium-and-seed
+    description: "Cilium uses overlay (tunnel) routing with VXLAN. `probe` runs on the worker node and `shuttle` on the control-plane node."
     type: file
     source: bootstrap/setup.sh
-teardown:
-  keepCluster: false
 testing:
   init:
-  - name: reference-result
+  - name: apply-reference-solution
+    description: Apply the reference solution
     type: file
     source: solution/apply.sh
 validation:
-  script:
-    name: verify-fields-and-live-evidence
+  scripts:
+  - name: routing-mode-recorded
+    description: "The report holds the live routing mode"
     type: file
-    source: validate.sh
+    source: validation/validate-routing-mode-recorded.sh
+    hint: "Read routing-mode of cilium-config."
+  - name: tunnel-protocol-recorded
+    description: "The report holds the live tunnel protocol"
+    type: file
+    source: validation/validate-tunnel-protocol-recorded.sh
+    hint: "Read tunnel-protocol of cilium-config."
+  - name: node-placement-recorded
+    description: "The report names the nodes of probe and shuttle"
+    type: file
+    source: validation/validate-node-placement-recorded.sh
+    hint: "Read spec.nodeName of both pods."
+  - name: cross-node-request-works
+    description: "shuttle reaches probe across nodes"
+    type: file
+    source: validation/validate-cross-node-request-works.sh
+    hint: "Do not change the Cilium configuration."
+teardown:
+  keepCluster: false

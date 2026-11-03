@@ -1,0 +1,288 @@
+# Knowledge check for section 050. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats052-050
+course_id: ATS052
+exam_code: CCA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-050
+  title: "Datapath Models"
+questions:
+  - id: ats052-050-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain encapsulation"
+    source_readings:
+      - sections/section-050/module-01/course-01-encapsulation-and-the-overlay-datapath.md
+    prompt: "What does an overlay do to a pod packet that crosses nodes?"
+    options:
+      - id: a
+        text: "It wraps the pod packet in an outer packet between the node addresses."
+        explanation: "Correct. The node network sees only the outer packet."
+      - id: b
+        text: "It replaces the pod address with a random address."
+        explanation: "Addresses are not replaced."
+      - id: c
+        text: "It stores the packet on disk."
+        explanation: "Packets are not stored."
+      - id: d
+        text: "It sends the packet through the API server."
+        explanation: "The API server is not in the path."
+    correct_option: a
+    explanation: "Correct. The node network sees only the outer packet."
+
+  - id: ats052-050-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Diagnose a blocked tunnel port"
+    source_readings:
+      - sections/section-050/module-01/course-01-encapsulation-and-the-overlay-datapath.md
+    prompt: "Same-node pod traffic works, but cross-node pod traffic fails in tunnel mode with VXLAN. What do you check first?"
+    options:
+      - id: a
+        text: "Whether the pods have labels."
+        explanation: "Labels do not break the tunnel."
+      - id: b
+        text: "Whether Hubble is enabled."
+        explanation: "Hubble does not carry traffic."
+      - id: c
+        text: "Whether the Service has a selector."
+        explanation: "Same-node traffic works, so Services are not the cause."
+      - id: d
+        text: "Whether UDP port 8472 is open between the nodes."
+        explanation: "Correct. This is the VXLAN port in Cilium."
+    correct_option: d
+    explanation: "Correct. This is the VXLAN port in Cilium."
+
+  - id: ats052-050-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the tunnel protocols and their ports"
+    source_readings:
+      - sections/section-050/module-01/course-02-vxlan-geneve-and-the-mtu.md
+    prompt: "Which pair of tunnel protocol and default UDP port is correct in Cilium?"
+    options:
+      - id: a
+        text: "VXLAN with 6081 and Geneve with 8472"
+        explanation: "The ports are swapped."
+      - id: b
+        text: "VXLAN with 443 and Geneve with 80"
+        explanation: "These are web ports."
+      - id: c
+        text: "VXLAN with 8472 and Geneve with 6081"
+        explanation: "Correct. These are the defaults of the course material."
+      - id: d
+        text: "VXLAN with 4245 and Geneve with 9898"
+        explanation: "These are Hubble Relay and probe ports."
+    correct_option: c
+    explanation: "Correct. These are the defaults of the course material."
+
+  - id: ats052-050-q04
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Calculate the effect on the MTU"
+    source_readings:
+      - sections/section-050/module-01/course-02-vxlan-geneve-and-the-mtu.md
+    prompt: "The node MTU is 1500 and the tunnel is VXLAN with about 50 bytes of overhead. What is the right pod MTU?"
+    options:
+      - id: a
+        text: "1500, equal to the node MTU."
+        explanation: "A wrapped 1500 byte packet would not fit."
+      - id: b
+        text: "About 1450, so that a wrapped packet still fits the node MTU."
+        explanation: "Correct. The pod MTU is the node MTU minus the overhead."
+      - id: c
+        text: "9000 for jumbo frames."
+        explanation: "The node MTU is 1500."
+      - id: d
+        text: "50, equal to the overhead."
+        explanation: "That is the size of the overhead and not of the MTU."
+    correct_option: b
+    explanation: "Correct. The pod MTU is the node MTU minus the overhead."
+
+  - id: ats052-050-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the settings of native routing"
+    source_readings:
+      - sections/section-050/module-02/course-01-requirements-and-settings-of-native-routing.md
+    prompt: "Which setting tells each agent to install routes to the pod ranges of the other nodes?"
+    options:
+      - id: a
+        text: "`auto-direct-node-routes`"
+        explanation: "Correct. It works for nodes in one layer 2 network."
+      - id: b
+        text: "`tunnel-protocol`"
+        explanation: "This selects VXLAN or Geneve."
+      - id: c
+        text: "`debug`"
+        explanation: "This controls logging."
+      - id: d
+        text: "`enable-hubble`"
+        explanation: "This enables flows."
+    correct_option: a
+    explanation: "Correct. It works for nodes in one layer 2 network."
+
+  - id: ats052-050-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Diagnose missing routes"
+    source_readings:
+      - sections/section-050/module-02/course-01-requirements-and-settings-of-native-routing.md
+    prompt: "The routing mode is native and `auto-direct-node-routes` is false. No other route source exists. What is the result?"
+    options:
+      - id: a
+        text: "The agents fall back to a tunnel."
+        explanation: "Cilium does not switch modes by itself."
+      - id: b
+        text: "Traffic works, since the pods share a subnet."
+        explanation: "Pod ranges are separate from the node subnet."
+      - id: c
+        text: "Only DNS fails."
+        explanation: "All cross-node traffic is affected."
+      - id: d
+        text: "Cross-node pod traffic times out, because no node has a route to the pod range of the other node."
+        explanation: "Correct. Native routing needs routes on every hop."
+    correct_option: d
+    explanation: "Correct. Native routing needs routes on every hop."
+
+  - id: ats052-050-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose a route distribution"
+    source_readings:
+      - sections/section-050/module-02/course-02-route-distribution-bgp-and-masquerading.md
+    prompt: "The nodes are in different subnets with routers between them, and you control the routers. Which option distributes the pod ranges?"
+    options:
+      - id: a
+        text: "`auto-direct-node-routes` only."
+        explanation: "It needs the nodes to share a layer 2 network."
+      - id: b
+        text: "A larger MTU."
+        explanation: "The MTU is not a routing method."
+      - id: c
+        text: "BGP, where nodes announce their pod ranges to the routers."
+        explanation: "Correct. Direct node routes need one layer 2 network."
+      - id: d
+        text: "A second operator replica."
+        explanation: "Replicas do not distribute routes."
+    correct_option: c
+    explanation: "Correct. Direct node routes need one layer 2 network."
+
+  - id: ats052-050-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain masquerading"
+    source_readings:
+      - sections/section-050/module-02/course-02-route-distribution-bgp-and-masquerading.md
+    prompt: "What does masquerading do?"
+    options:
+      - id: a
+        text: "It hides the pods from Hubble."
+        explanation: "Hubble still sees the flows inside the node."
+      - id: b
+        text: "It replaces the pod source address with the node address for traffic that leaves the native routing range."
+        explanation: "Correct. The destination can then answer to the node address."
+      - id: c
+        text: "It removes labels from packets."
+        explanation: "Labels are not in packets."
+      - id: d
+        text: "It encrypts all traffic."
+        explanation: "Masquerading is address translation."
+    correct_option: b
+    explanation: "Correct. The destination can then answer to the node address."
+
+  - id: ats052-050-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose a datapath model"
+    source_readings:
+      - sections/section-050/module-03/course-01-choosing-a-datapath-model.md
+    prompt: "The network team will not change any routes, and the nodes are in several subnets. Which model fits?"
+    options:
+      - id: a
+        text: "Tunnel mode, because it needs only IP delivery between nodes and an open tunnel port."
+        explanation: "Correct. This is the safe default when routes cannot be changed."
+      - id: b
+        text: "Native routing without any route source."
+        explanation: "This would break cross-node traffic."
+      - id: c
+        text: "No datapath."
+        explanation: "A cluster always has one."
+      - id: d
+        text: "A cluster per pod."
+        explanation: "This is not a datapath model."
+    correct_option: a
+    explanation: "Correct. This is the safe default when routes cannot be changed."
+
+  - id: ats052-050-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Compare the models"
+    source_readings:
+      - sections/section-050/module-03/course-01-choosing-a-datapath-model.md
+    prompt: "Which comparison of tunnel mode and native routing is correct?"
+    options:
+      - id: a
+        text: "A tunnel is faster than native routing in every case."
+        explanation: "A tunnel adds overhead."
+      - id: b
+        text: "Native routing needs no routes."
+        explanation: "It needs routes on every hop."
+      - id: c
+        text: "Both models need a firewall rule for UDP 8472."
+        explanation: "Only VXLAN tunnel mode uses that port."
+      - id: d
+        text: "A tunnel adds bytes and CPU per packet and asks little of the network. Native routing adds nothing per packet and asks for routes to all pod ranges."
+        explanation: "Correct. This is the main trade-off."
+    correct_option: d
+    explanation: "Correct. This is the main trade-off."
+
+  - id: ats052-050-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain kube-proxy replacement"
+    source_readings:
+      - sections/section-050/module-03/course-02-kube-proxy-replacement-and-masquerading.md
+    prompt: "What does kube-proxy replacement mean?"
+    options:
+      - id: a
+        text: "Cilium deletes all Services."
+        explanation: "Services remain."
+      - id: b
+        text: "Cilium runs kube-proxy inside the operator."
+        explanation: "This is not what the setting means."
+      - id: c
+        text: "Cilium translates Service addresses in eBPF instead of kube-proxy using iptables or IPVS rules."
+        explanation: "Correct. The agent builds the Service maps."
+      - id: d
+        text: "Cilium uses DNS to find backends."
+        explanation: "Translation is done by eBPF."
+    correct_option: c
+    explanation: "Correct. The agent builds the Service maps."
+
+  - id: ats052-050-q12
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Describe an audit of the datapath model"
+    source_readings:
+      - sections/section-050/module-03/course-02-kube-proxy-replacement-and-masquerading.md
+    prompt: "Which five values of `cilium-config` together describe the datapath model of a cluster?"
+    options:
+      - id: a
+        text: "`debug`, `enable-hubble`, `ipam`, `tunnel-protocol` and `mtu`"
+        explanation: "These do not cover Service and masquerade translation."
+      - id: b
+        text: "`routing-mode`, `ipv4-native-routing-cidr`, `auto-direct-node-routes`, `kube-proxy-replacement` and `enable-bpf-masquerade`"
+        explanation: "Correct. They describe routing, translation of Services and translation of sources."
+      - id: c
+        text: "Only the number of nodes."
+        explanation: "The node count does not describe the model."
+      - id: d
+        text: "Only the version of Kubernetes."
+        explanation: "The version does not describe the model."
+    correct_option: b
+    explanation: "Correct. They describe routing, translation of Services and translation of sources."

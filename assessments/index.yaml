@@ -2,12 +2,51 @@ schema_version: 1
 course_id: ATS052
 status: draft
 banks:
-- id: ats052-domain-review
-  path: assessments/domain-review.yaml
-  question_count: 15
+- id: ats052-010
+  path: sections/section-010/quiz.yaml
+  question_count: 10
   placement:
     position: after
-    reading: sections/section-050/module-01/course-02-summary.md
+    reading: sections/section-010/capstone/labs/lab-01/question.md
+  covered_sections:
+  - section-010
+- id: ats052-020
+  path: sections/section-020/quiz.yaml
+  question_count: 11
+  placement:
+    position: after
+    reading: sections/section-020/capstone/labs/lab-01/question.md
+  covered_sections:
+  - section-020
+- id: ats052-030
+  path: sections/section-030/quiz.yaml
+  question_count: 11
+  placement:
+    position: after
+    reading: sections/section-030/capstone/labs/lab-01/question.md
+  covered_sections:
+  - section-030
+- id: ats052-040
+  path: sections/section-040/quiz.yaml
+  question_count: 12
+  placement:
+    position: after
+    reading: sections/section-040/capstone/labs/lab-01/question.md
+  covered_sections:
+  - section-040
+- id: ats052-050
+  path: sections/section-050/quiz.yaml
+  question_count: 12
+  placement:
+    position: after
+    reading: sections/section-050/capstone/labs/lab-01/question.md
+  covered_sections:
+  - section-050
+- id: ats052-final
+  path: sections/final-domain-quiz.yaml
+  question_count: 15
+  placement:
+    position: end
   covered_sections:
   - section-010
   - section-020

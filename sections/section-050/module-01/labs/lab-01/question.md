@@ -3,33 +3,23 @@ draft: true
 exam_objectives:
 - Datapath Models
 ---
-# Diagnose Overlay Routing Configuration
+# Record Overlay Routing Settings And Node Placement
 
-Identify the active routing mode and tunnel protocol.
+Solve this question on: `terminal`
 
-## Starting state
+Traffic from `shuttle` to `probe` crosses two nodes. The network team wants to document the datapath model that carries it and the nodes that hold the two pods.
 
-Cilium manages the private two-node cluster. Hubble Relay and the BGP control plane are enabled. The probe and two clients are healthy; no learner policy or evidence report exists. This baseline uses kube-proxy and tunnelling.
-
-Use a host shell with the private kubeconfig for this independent kind environment. A kubeconfig identifies the cluster and credentials used by kubectl, the Kubernetes command-line tool.
+Connect to the cluster first. A kubeconfig is the file that tells `kubectl` which cluster and credentials to use.
 
 ```sh
 export KUBECONFIG="$(astrona kubeconfig ats-052-lab-050-01-01)"
-test "$(kubectl config current-context)" = "kind-astro-ats-052-lab-050-01-01" || exit 1
-node_name="astro-ats-052-lab-050-01-01-control-plane"
-worker_name="astro-ats-052-lab-050-01-01-worker"
 ```
 
-Keep this connection selected. Host-level commands name only this environment's node containers. They do not operate on the host operating system.
+Create the ConfigMap `overlay-evidence` in the namespace `starfleet` with these keys:
 
-## Required result
+1. `routing-mode`: the value of the `routing-mode` key in `cilium-config`.
+2. `tunnel-protocol`: the value of the `tunnel-protocol` key in `cilium-config`.
+3. `probe-node`: the node that runs the `probe` pod.
+4. `shuttle-node`: the node that runs the `shuttle` pod.
 
-Record routing-mode and tunnel-protocol, then demonstrate a healthy request. This baseline is an overlay. The native-routing prerequisites in the reading require separate host-network routing; this exercise does not claim to configure that infrastructure.
-
-Record observations in `starfleet/evidence`, whose `report.json` contains the stated report. The verifier reads the live API again; invented values do not pass.
-
-The report object uses these fields: `routing_mode`, `tunnel_protocol`, `response`. Keep numeric values numeric and preserve arrays and nested objects returned by the API.
-
-## Verify The Result
-
-The grader checks the required object fields and actual observations. Wait for controller convergence before submitting. Preserve the task's namespace, workload names and unrelated components.
+A request from `shuttle` to `http://probe.starfleet:9898/healthz` must return HTTP 200. Do not change `cilium-config`.

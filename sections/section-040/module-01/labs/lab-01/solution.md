@@ -3,82 +3,42 @@ draft: true
 exam_objectives:
 - Cilium Component Roles
 ---
-# Separate Agent Operator And Relay Roles Solution
+# Change Agent Settings And Restart The Agents: Solution
 
-Use a host shell with the private kubeconfig for this independent kind environment. A kubeconfig identifies the cluster and credentials used by kubectl, the Kubernetes command-line tool.
+Connect to the cluster first. A kubeconfig is the file that tells `kubectl` which cluster and credentials to use.
 
 ```sh
 export KUBECONFIG="$(astrona kubeconfig ats-052-lab-040-01-01)"
-test "$(kubectl config current-context)" = "kind-astro-ats-052-lab-040-01-01" || exit 1
-node_name="astro-ats-052-lab-040-01-01-control-plane"
-worker_name="astro-ats-052-lab-040-01-01-worker"
 ```
 
-Keep this connection selected. Host-level commands name only this environment's node containers. They do not operate on the host operating system.
+## Step 1: Change the setting
 
-## Inspect And Explain
-
-Cilium manages the private two-node cluster. Hubble Relay and the BGP control plane are enabled. The probe and two clients are healthy; no learner policy or evidence report exists. This baseline uses kube-proxy and tunnelling.
-
-Inspect the current objects before changing them:
+The agent reads `cilium-config` when it starts. A change in the ConfigMap alone does not reach a running agent.
 
 ```sh
-kubectl -n starfleet get pods -o wide
-kubectl get nodes -o wide
+kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.debug}{"\n"}'
+kubectl -n kube-system patch configmap cilium-config --type merge -p '{"data":{"debug":"true"}}'
 ```
 
-Identify the per-node agent, allocation/reconciliation operator and aggregated Hubble Relay. Confirm workloads are ready before recording their images.
+## Step 2: Restart the agents
 
-Record observations in `starfleet/evidence`, whose `report.json` contains the stated report. The verifier reads the live API again; invented values do not pass.
-
-
-Save this as `record.py`:
-
-```python
-import json,subprocess,time,sys,tempfile,os
-
-def call(*args):
- r=subprocess.run(list(args),text=True,capture_output=True,timeout=20)
- assert r.returncode==0, 'Observation command failed: '+args[0]
- return r.stdout.strip()
-def obj(kind,name,ns='starfleet'):
- return json.loads(call('kubectl',*(['-n',ns] if ns else []),'get',kind,name,'-o','json'))
-def api(path):
- script='import urllib.request; print(urllib.request.urlopen('+repr('http://prometheus:9090'+path)+',timeout=8).read().decode())'
- return json.loads(call('kubectl','-n','starfleet','exec','shuttle','--','python','-c',script))
-def save(data):
- resource={'apiVersion':'v1','kind':'ConfigMap','metadata':{'name':'evidence','namespace':'starfleet'},'data':{'report.json':json.dumps(data,sort_keys=True)}}
- with tempfile.NamedTemporaryFile(mode='w',suffix='.json',delete=False) as f:json.dump(resource,f);path=f.name
- try:call('kubectl','apply','-f',path)
- finally:os.unlink(path)
-
-assert call('kubectl','config','current-context') == 'kind-astro-ats-052-lab-040-01-01'
-agent=obj('daemonset','cilium','kube-system');operator=obj('deployment','cilium-operator','kube-system');relay=obj('deployment','hubble-relay','kube-system')
-assert operator['status']['availableReplicas']==1 and relay['status']['availableReplicas']==1
-report={'agent':agent['spec']['template']['spec']['containers'][0]['image'],'operator':operator['spec']['template']['spec']['containers'][0]['image'],'relay':relay['spec']['template']['spec']['containers'][0]['image']}
-save(report)
-```
-
-Apply the scoped correction:
+A rollout restart adds an annotation to the pod template of the DaemonSet. The DaemonSet controller then replaces the agent pods one node at a time.
 
 ```sh
-python3 record.py
+kubectl -n kube-system rollout restart daemonset/cilium
+kubectl -n kube-system rollout status daemonset/cilium --timeout=300s
 ```
 
-## Verify The Result
-
-Observe the actual result. A denied request returns a nonzero status when the denial works, so run it separately from a shell sequence that stops on error. Status convergence and a successful request establish different parts of the result.
+## Step 3: Check the result
 
 ```sh
-kubectl -n starfleet get configmaps
-kubectl -n starfleet get deployment probe -o yaml
+kubectl -n kube-system get pods -l k8s-app=cilium -o wide
+kubectl -n kube-system get daemonset cilium
 ```
 
-Record the images of three different Cilium components. The commands above deliberately target one environment. Keep its remaining components available so an unrelated failure cannot stand in for the required denial or correction. No example command output is presented as evidence of a completed run. A matching field alone does not establish that a process used it or that a controller reconciled it.
-
-After recording your result, remove the independent lab with `astrona destroy ats-052-lab-040-01-01`.
+Every node shows one ready agent pod. Submit with `astrona submit -c sections/section-040/module-01/labs/lab-01` and remove the environment with `astrona destroy ats-052-lab-040-01-01`.
 
 ## Common pitfalls
 
 > [!WARNING]
-> Confirm the private context and exact node names before a change. Check the stated scope and live result. Do not change unrelated components to hide the original fault.
+> A ConfigMap value must be a string. Write `"true"` in quotes inside the JSON patch. Restarting the agents briefly interrupts new endpoint setup on the node, so a restart belongs in a controlled change, not a casual test.

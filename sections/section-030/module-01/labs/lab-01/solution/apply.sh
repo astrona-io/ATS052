@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
+# Reference solution. Run only by `astrona test`.
 set -euo pipefail
-if [[ "$(kubectl config current-context)" != "kind-astro-ats-052-lab-030-01-01" ]]; then
-  printf 'Refusing to operate on another Kubernetes context\n' >&2
-  exit 1
-fi
-lab_directory="$(cd "$(dirname "$0")/.." && pwd)"
-solution_directory="$lab_directory/solution"
-node_name="astro-ats-052-lab-030-01-01-control-plane"
-worker_name="astro-ats-052-lab-030-01-01-worker"
-
-python3 "$solution_directory/record.py"
+kubectl -n starfleet create configmap ipam-evidence --from-literal=ipam-mode="$(kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.ipam}')" --from-literal=pool-cidr="$(kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.cluster-pool-ipv4-cidr}')" --from-literal=mask-size="$(kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.cluster-pool-ipv4-mask-size}')" --dry-run=client -o yaml | kubectl apply -f -

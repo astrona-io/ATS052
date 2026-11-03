@@ -3,82 +3,47 @@ draft: true
 exam_objectives:
 - Cilium Architecture
 ---
-# Compare Endpoint Intent With Realised Identity Solution
+# Repair A Policy Through Pod Labels: Solution
 
-Use a host shell with the private kubeconfig for this independent kind environment. A kubeconfig identifies the cluster and credentials used by kubectl, the Kubernetes command-line tool.
+Connect to the cluster first. A kubeconfig is the file that tells `kubectl` which cluster and credentials to use.
 
 ```sh
 export KUBECONFIG="$(astrona kubeconfig ats-052-lab-020-01-01)"
-test "$(kubectl config current-context)" = "kind-astro-ats-052-lab-020-01-01" || exit 1
-node_name="astro-ats-052-lab-020-01-01-control-plane"
-worker_name="astro-ats-052-lab-020-01-01-worker"
 ```
 
-Keep this connection selected. Host-level commands name only this environment's node containers. They do not operate on the host operating system.
+## Step 1: Compare desired state and realised identity
 
-## Inspect And Explain
-
-Cilium manages the private two-node cluster. Hubble Relay and the BGP control plane are enabled. The probe and two clients are healthy; no learner policy or evidence report exists. This baseline uses kube-proxy and tunnelling.
-
-Inspect the current objects before changing them:
+The policy selects sources by label. Cilium turns the labels of a pod into a security identity. Read the labels of `shuttle`, then the identity labels in its CiliumEndpoint.
 
 ```sh
-kubectl -n starfleet get pods -o wide
-kubectl get nodes -o wide
+kubectl -n starfleet get pod shuttle --show-labels
+kubectl -n starfleet get ciliumendpoint shuttle -o jsonpath='{.status.identity.id}{"\n"}{.status.identity.labels}{"\n"}'
+kubectl -n starfleet get ciliumnetworkpolicy probe-from-clients -o jsonpath='{.spec.ingress[0].fromEndpoints}{"\n"}'
 ```
 
-Record the shuttle Pod address, endpoint identity and endpoint state. Check that endpoint status is ready. Resource intent and reconciled state are separate observations.
+The pod has only `app=shuttle`. The identity labels do not contain `role=client`, so the policy does not match this identity and the packet is dropped by the datapath on the node of `probe`.
 
-Record observations in `starfleet/evidence`, whose `report.json` contains the stated report. The verifier reads the live API again; invented values do not pass.
+## Step 2: Add the label
 
-
-Save this as `record.py`:
-
-```python
-import json,subprocess,time,sys,tempfile,os
-
-def call(*args):
- r=subprocess.run(list(args),text=True,capture_output=True,timeout=20)
- assert r.returncode==0, 'Observation command failed: '+args[0]
- return r.stdout.strip()
-def obj(kind,name,ns='starfleet'):
- return json.loads(call('kubectl',*(['-n',ns] if ns else []),'get',kind,name,'-o','json'))
-def api(path):
- script='import urllib.request; print(urllib.request.urlopen('+repr('http://prometheus:9090'+path)+',timeout=8).read().decode())'
- return json.loads(call('kubectl','-n','starfleet','exec','shuttle','--','python','-c',script))
-def save(data):
- resource={'apiVersion':'v1','kind':'ConfigMap','metadata':{'name':'evidence','namespace':'starfleet'},'data':{'report.json':json.dumps(data,sort_keys=True)}}
- with tempfile.NamedTemporaryFile(mode='w',suffix='.json',delete=False) as f:json.dump(resource,f);path=f.name
- try:call('kubectl','apply','-f',path)
- finally:os.unlink(path)
-
-assert call('kubectl','config','current-context') == 'kind-astro-ats-052-lab-020-01-01'
-pod=obj('pod','shuttle');ep=obj('ciliumendpoint','shuttle')
-assert ep['status']['state']=='ready'
-report={'pod_ip':pod['status']['podIP'],'identity':ep['status']['identity']['id'],'state':ep['status']['state']}
-save(report)
-```
-
-Apply the scoped correction:
+Adding a label changes the label set. The Cilium agent on the node of `shuttle` notices the change, asks for the identity of the new label set and updates the endpoint.
 
 ```sh
-python3 record.py
+kubectl -n starfleet label pod shuttle role=client
+kubectl -n starfleet get ciliumendpoint shuttle -o jsonpath='{.status.identity.id}{"\n"}'
 ```
 
-## Verify The Result
+The identity number differs from the number in step 1.
 
-Observe the actual result. A denied request returns a nonzero status when the denial works, so run it separately from a shell sequence that stops on error. Status convergence and a successful request establish different parts of the result.
+## Step 3: Check both clients
 
 ```sh
-kubectl -n starfleet get configmaps
-kubectl -n starfleet get deployment probe -o yaml
+kubectl -n starfleet exec shuttle -- curl -s -m 5 -o /dev/null -w '%{http_code}\n' http://probe.starfleet:9898/healthz
+kubectl -n outpost exec drifter -- curl -s -m 5 -o /dev/null -w '%{http_code}\n' http://probe.starfleet:9898/healthz
 ```
 
-Map a Pod to its CiliumEndpoint and realised identity. The commands above deliberately target one environment. Keep its remaining components available so an unrelated failure cannot stand in for the required denial or correction. No example command output is presented as evidence of a completed run. A matching field alone does not establish that a process used it or that a controller reconciled it.
-
-After recording your result, remove the independent lab with `astrona destroy ats-052-lab-020-01-01`.
+The first command prints 200. The second fails. A policy in `starfleet` that names `role: client` matches only pods of `starfleet`, so a label on `drifter` would not change the result. Submit with `astrona submit -c sections/section-020/module-01/labs/lab-01` and remove the environment with `astrona destroy ats-052-lab-020-01-01`.
 
 ## Common pitfalls
 
 > [!WARNING]
-> Confirm the private context and exact node names before a change. Check the stated scope and live result. Do not change unrelated components to hide the original fault.
+> Do not edit the policy to match the pod. The pod label is the missing fact. Labels are security input: anyone who can label a pod can change the identity it receives.

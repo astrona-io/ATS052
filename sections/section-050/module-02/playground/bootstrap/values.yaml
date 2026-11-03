@@ -1,0 +1,11 @@
+# Cilium Helm values: native routing.
+operator:
+  replicas: 1
+ipam:
+  mode: kubernetes
+routingMode: native
+ipv4NativeRoutingCIDR: 10.244.0.0/16
+autoDirectNodeRoutes: false
+kubeProxyReplacement: false
+bpf:
+  masquerade: false

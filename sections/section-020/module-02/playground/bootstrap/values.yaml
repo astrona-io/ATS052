@@ -1,0 +1,5 @@
+# Cilium Helm values for this environment.
+operator:
+  replicas: 1
+ipam:
+  mode: kubernetes

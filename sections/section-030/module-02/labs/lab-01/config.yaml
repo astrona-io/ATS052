@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Trace A Pod Address To Its Node Allocation (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-030-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "Cilium runs in `cluster-pool` mode. One `probe` pod runs. No evidence report exists."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: probe-ip-recorded
+    description: "The report holds the live pod IP"
+    type: file
+    source: validation/validate-probe-ip-recorded.sh
+    hint: "Read status.podIP of the probe pod."
+  - name: probe-node-recorded
+    description: "The report names the live node of the pod"
+    type: file
+    source: validation/validate-probe-node-recorded.sh
+    hint: "Read spec.nodeName of the probe pod."
+  - name: node-cidr-recorded
+    description: "The report holds the CiliumNode slice of that node"
+    type: file
+    source: validation/validate-node-cidr-recorded.sh
+    hint: "Read spec.ipam.podCIDRs of the CiliumNode with the node name."
+teardown:
+  keepCluster: false

@@ -3,83 +3,45 @@ draft: true
 exam_objectives:
 - Understand the Role of Cilium in Kubernetes Environments
 ---
-# Find The Installed CNI And Ready Agents Solution
+# Record What Cilium Runs On The Cluster: Solution
 
-Use a host shell with the private kubeconfig for this independent kind environment. A kubeconfig identifies the cluster and credentials used by kubectl, the Kubernetes command-line tool.
+Connect to the cluster first. A kubeconfig is the file that tells `kubectl` which cluster and credentials to use.
 
 ```sh
 export KUBECONFIG="$(astrona kubeconfig ats-052-lab-010-01-01)"
-test "$(kubectl config current-context)" = "kind-astro-ats-052-lab-010-01-01" || exit 1
-node_name="astro-ats-052-lab-010-01-01-control-plane"
-worker_name="astro-ats-052-lab-010-01-01-worker"
 ```
 
-Keep this connection selected. Host-level commands name only this environment's node containers. They do not operate on the host operating system.
+## Step 1: Read the agent image and the ready count
 
-## Inspect And Explain
-
-Cilium manages the private two-node cluster. Hubble Relay and the BGP control plane are enabled. The probe and two clients are healthy; no learner policy or evidence report exists. This baseline uses kube-proxy and tunnelling.
-
-Inspect the current objects before changing them:
+The DaemonSet `cilium` runs one agent pod on every node. A jsonpath filter selects the container by name, so the order of containers does not matter.
 
 ```sh
-kubectl -n starfleet get pods -o wide
-kubectl get nodes -o wide
+kubectl -n kube-system get daemonset cilium -o jsonpath='{.spec.template.spec.containers[?(@.name=="cilium-agent")].image}'
+kubectl -n kube-system get daemonset cilium -o jsonpath='{.status.numberReady}'
 ```
 
-Record the agent image and the number of ready nodes. Kubernetes object presence alone does not prove endpoint connectivity; run a probe request before recording the result.
+## Step 2: Read the identity of the drifter
 
-Record observations in `starfleet/evidence`, whose `report.json` contains the stated report. The verifier reads the live API again; invented values do not pass.
-
-
-Save this as `record.py`:
-
-```python
-import json,subprocess,time,sys,tempfile,os
-
-def call(*args):
- r=subprocess.run(list(args),text=True,capture_output=True,timeout=20)
- assert r.returncode==0, 'Observation command failed: '+args[0]
- return r.stdout.strip()
-def obj(kind,name,ns='starfleet'):
- return json.loads(call('kubectl',*(['-n',ns] if ns else []),'get',kind,name,'-o','json'))
-def api(path):
- script='import urllib.request; print(urllib.request.urlopen('+repr('http://prometheus:9090'+path)+',timeout=8).read().decode())'
- return json.loads(call('kubectl','-n','starfleet','exec','shuttle','--','python','-c',script))
-def save(data):
- resource={'apiVersion':'v1','kind':'ConfigMap','metadata':{'name':'evidence','namespace':'starfleet'},'data':{'report.json':json.dumps(data,sort_keys=True)}}
- with tempfile.NamedTemporaryFile(mode='w',suffix='.json',delete=False) as f:json.dump(resource,f);path=f.name
- try:call('kubectl','apply','-f',path)
- finally:os.unlink(path)
-
-assert call('kubectl','config','current-context') == 'kind-astro-ats-052-lab-010-01-01'
-ds=obj('daemonset','cilium','kube-system')
-assert ds['status']['numberReady']==ds['status']['desiredNumberScheduled']
-response=call('kubectl','-n','starfleet','exec','shuttle','--','python','-c',"import urllib.request; print(urllib.request.urlopen('http://probe:8080/',timeout=4).read().decode())")
-report={'agent_image':ds['spec']['template']['spec']['containers'][0]['image'],'ready_agents':ds['status']['numberReady'],'response':response}
-save(report)
-```
-
-Apply the scoped correction:
+Cilium creates one CiliumEndpoint object for each Pod it manages. The security identity is in `status.identity.id`.
 
 ```sh
-python3 record.py
+kubectl -n outpost get ciliumendpoint drifter -o jsonpath='{.status.identity.id}'
 ```
 
-## Verify The Result
+## Step 3: Save the report
 
-Observe the actual result. A denied request returns a nonzero status when the denial works, so run it separately from a shell sequence that stops on error. Status convergence and a successful request establish different parts of the result.
+Use the three values as they are printed. This command reads them again and writes the ConfigMap in one step.
 
 ```sh
-kubectl -n starfleet get configmaps
-kubectl -n starfleet get deployment probe -o yaml
+kubectl -n starfleet create configmap cni-evidence \
+  --from-literal=agent-image="$(kubectl -n kube-system get daemonset cilium -o jsonpath='{.spec.template.spec.containers[?(@.name=="cilium-agent")].image}')" \
+  --from-literal=ready-agents="$(kubectl -n kube-system get daemonset cilium -o jsonpath='{.status.numberReady}')" \
+  --from-literal=drifter-identity="$(kubectl -n outpost get ciliumendpoint drifter -o jsonpath='{.status.identity.id}')"
 ```
 
-Identify Cilium as the installed CNI and establish agent readiness. The commands above deliberately target one environment. Keep its remaining components available so an unrelated failure cannot stand in for the required denial or correction. No example command output is presented as evidence of a completed run. A matching field alone does not establish that a process used it or that a controller reconciled it.
-
-After recording your result, remove the independent lab with `astrona destroy ats-052-lab-010-01-01`.
+Submit with `astrona submit -c sections/section-010/module-01/labs/lab-01`. When you finish, remove the environment with `astrona destroy ats-052-lab-010-01-01`.
 
 ## Common pitfalls
 
 > [!WARNING]
-> Confirm the private context and exact node names before a change. Check the stated scope and live result. Do not change unrelated components to hide the original fault.
+> Do not type the identity from memory: a new Pod can receive a different number. If `kubectl get ciliumendpoint` says the resource type is unknown, the Cilium CRDs are not installed and Cilium is not the network plugin.

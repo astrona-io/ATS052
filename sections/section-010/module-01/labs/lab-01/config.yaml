@@ -1,11 +1,12 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Record What Cilium Runs On The Cluster (LAB). UNTESTED: static checks only. Graded against the live cluster.
 apiVersion: astrona.io/v1
 metadata:
   name: ats-052-lab-010-01-01
   docs:
-    prerequisites: docs/prerequisites.md
-    examQuestion: question.md
-    caseStudy: docs/case-study.md
-    guide: solution.md
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
 runtime:
   type: kind
   kind:
@@ -17,18 +18,32 @@ runtime:
       podSubnet: 10.244.0.0/16
 bootstrap:
   init:
-  - name: seed-private-environment
+  - name: install-cilium-and-seed
+    description: "Two-node kind cluster with Cilium installed as the only network plugin, plus the `probe` Service, the `shuttle` pod and the `drifter` pod. No evidence ConfigMap exists."
     type: file
     source: bootstrap/setup.sh
-teardown:
-  keepCluster: false
 testing:
   init:
-  - name: reference-result
+  - name: apply-reference-solution
+    description: Apply the reference solution
     type: file
     source: solution/apply.sh
 validation:
-  script:
-    name: verify-fields-and-live-evidence
+  scripts:
+  - name: agent-image-recorded
+    description: "The report names the live agent image"
     type: file
-    source: validate.sh
+    source: validation/validate-agent-image-recorded.sh
+    hint: "Read the image of the container named cilium-agent in the cilium DaemonSet."
+  - name: ready-agents-recorded
+    description: "The report holds the live number of ready agents"
+    type: file
+    source: validation/validate-ready-agents-recorded.sh
+    hint: "Use status.numberReady of the cilium DaemonSet."
+  - name: drifter-identity-recorded
+    description: "The report holds the live identity of the drifter"
+    type: file
+    source: validation/validate-drifter-identity-recorded.sh
+    hint: "Read status.identity.id of the CiliumEndpoint drifter in outpost."
+teardown:
+  keepCluster: false

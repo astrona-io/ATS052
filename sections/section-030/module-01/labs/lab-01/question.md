@@ -3,33 +3,22 @@ draft: true
 exam_objectives:
 - IP Address Management (IPAM) with Cilium
 ---
-# Check Node PodCIDR Allocations
+# Record The IPAM Mode And Pool Settings
 
-Verify distinct Kubernetes PodCIDRs used by Cilium IPAM.
+Solve this question on: `terminal`
 
-## Starting state
+The network team must document how this cluster hands out pod IP addresses. The settings are in the ConfigMap `cilium-config` in `kube-system`, which the Cilium agent and the Cilium operator both read. Do not guess the values.
 
-Cilium manages the private two-node cluster. Hubble Relay and the BGP control plane are enabled. The probe and two clients are healthy; no learner policy or evidence report exists. This baseline uses kube-proxy and tunnelling.
-
-Use a host shell with the private kubeconfig for this independent kind environment. A kubeconfig identifies the cluster and credentials used by kubectl, the Kubernetes command-line tool.
+Connect to the cluster first. A kubeconfig is the file that tells `kubectl` which cluster and credentials to use.
 
 ```sh
 export KUBECONFIG="$(astrona kubeconfig ats-052-lab-030-01-01)"
-test "$(kubectl config current-context)" = "kind-astro-ats-052-lab-030-01-01" || exit 1
-node_name="astro-ats-052-lab-030-01-01-control-plane"
-worker_name="astro-ats-052-lab-030-01-01-worker"
 ```
 
-Keep this connection selected. Host-level commands name only this environment's node containers. They do not operate on the host operating system.
+Create the ConfigMap `ipam-evidence` in the namespace `starfleet` with these keys:
 
-## Required result
+1. `ipam-mode`: the value of the `ipam` key in `cilium-config`.
+2. `pool-cidr`: the value of the `cluster-pool-ipv4-cidr` key.
+3. `mask-size`: the value of the `cluster-pool-ipv4-mask-size` key.
 
-Record a node-name to podCIDR map. Check non-overlap with ipaddress and inspect ipam=kubernetes. This lab uses Kubernetes IPAM, not cloud ENI allocation.
-
-Record observations in `starfleet/evidence`, whose `report.json` contains the stated report. The verifier reads the live API again; invented values do not pass.
-
-The report object uses these fields: `pod_cidrs`, `ipam`. Keep numeric values numeric and preserve arrays and nested objects returned by the API.
-
-## Verify The Result
-
-The grader checks the required object fields and actual observations. Wait for controller convergence before submitting. Preserve the task's namespace, workload names and unrelated components.
+The grader reads the live `cilium-config` and compares. Do not change `cilium-config`.

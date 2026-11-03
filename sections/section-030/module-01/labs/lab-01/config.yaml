@@ -1,11 +1,12 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Record The IPAM Mode And Pool Settings (LAB). UNTESTED: static checks only. Graded against the live cluster.
 apiVersion: astrona.io/v1
 metadata:
   name: ats-052-lab-030-01-01
   docs:
-    prerequisites: docs/prerequisites.md
-    examQuestion: question.md
-    caseStudy: docs/case-study.md
-    guide: solution.md
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
 runtime:
   type: kind
   kind:
@@ -17,18 +18,32 @@ runtime:
       podSubnet: 10.244.0.0/16
 bootstrap:
   init:
-  - name: seed-private-environment
+  - name: install-cilium-and-seed
+    description: "Cilium runs in `cluster-pool` IPAM mode with the pool `10.100.0.0/16` and a per-node mask size of 24. No evidence report exists."
     type: file
     source: bootstrap/setup.sh
-teardown:
-  keepCluster: false
 testing:
   init:
-  - name: reference-result
+  - name: apply-reference-solution
+    description: Apply the reference solution
     type: file
     source: solution/apply.sh
 validation:
-  script:
-    name: verify-fields-and-live-evidence
+  scripts:
+  - name: ipam-mode-recorded
+    description: "The report names the live IPAM mode"
     type: file
-    source: validate.sh
+    source: validation/validate-ipam-mode-recorded.sh
+    hint: "Read the ipam key of cilium-config."
+  - name: pool-cidr-recorded
+    description: "The report holds the live pool CIDR"
+    type: file
+    source: validation/validate-pool-cidr-recorded.sh
+    hint: "Read cluster-pool-ipv4-cidr of cilium-config."
+  - name: mask-size-recorded
+    description: "The report holds the live mask size"
+    type: file
+    source: validation/validate-mask-size-recorded.sh
+    hint: "Read cluster-pool-ipv4-mask-size of cilium-config."
+teardown:
+  keepCluster: false

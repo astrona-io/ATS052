@@ -1,31 +1,16 @@
-# Reusable Question Banks
+# Question Banks
 
-`assessments/index.yaml` lists banks in teaching order. Each bank uses schema
-version 1 and the contract in `schemas/question-bank.schema.json`. This is an
-authoring format for future application integration, not an existing Astrona
-quiz API. No YAML question file is registered as a Markdown reading.
+Each section has a `quiz.yaml` and the course has `sections/final-domain-quiz.yaml`. They follow the question bank schema version 1, as in the other courses. Each question is single choice with four options, per-option feedback, a learning objective and source reading paths.
 
-Banks follow their declared module summaries. Larger domains use an intermediate
-checkpoint after the third section and a final domain review; smaller domains
-use a final domain review. The index records covered sections and teaching order. Banks contain 5–15 original single-choice
-questions, scoped to concepts taught in the course. They remain draft for review.
+| Bank | File | Questions |
+| --- | --- | --- |
+| Section 010 | sections/section-010/quiz.yaml | 10 |
+| Section 020 | sections/section-020/quiz.yaml | 11 |
+| Section 030 | sections/section-030/quiz.yaml | 11 |
+| Section 040 | sections/section-040/quiz.yaml | 12 |
+| Section 050 | sections/section-050/quiz.yaml | 12 |
+| Final domain quiz | sections/final-domain-quiz.yaml | 15 |
 
-## Fields And Rendering
+The manifest lists the banks as `type: quiz` entries with `pass_score: 70`, each after the capstone lab of its section, and the final bank at the end of the course.
 
-- `id`: stable bank or question identity; preserve it when editing wording.
-- `scope`: section or domain checkpoint.
-- `placement`: relative reading path after which the checkpoint belongs.
-- `learning_objective`: the measurable outcome checked by the question.
-- `source_readings`: author traceability to the teaching; not learner navigation.
-- `prompt`: learner-visible question text.
-- `options`: stable option IDs, answer text and per-option feedback.
-- `correct_option`: the ID of the single correct option.
-- `explanation`: feedback reinforcing the supported answer.
-
-The application should send only the question ID, prompt and option IDs/text to
-the learner before submission. Keep `correct_option`, `explanation` and option
-explanations on the server until feedback is permitted. Match answers by option
-ID, not display position, so a later renderer can shuffle choices safely.
-
-The banks contain answer keys and are public learning material, so this is not
-a secure examination bank. Do not treat scores as an official CCA result.
+The banks contain answer keys and are public learning material. They are practice material and not official CCA exam questions. The file `assessments/domain-review.yaml` is the older bank for the previous one-module layout. It is no longer listed.

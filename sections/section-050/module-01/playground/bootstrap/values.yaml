@@ -1,0 +1,10 @@
+# Cilium Helm values: overlay (tunnel) routing with VXLAN.
+operator:
+  replicas: 1
+ipam:
+  mode: kubernetes
+routingMode: tunnel
+tunnelProtocol: vxlan
+kubeProxyReplacement: false
+bpf:
+  masquerade: false

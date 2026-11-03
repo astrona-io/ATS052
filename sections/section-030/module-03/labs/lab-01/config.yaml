@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Select A Pod IP Pool For A Namespace (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-030-03-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "Cilium runs in `multi-pool` mode with the pools `default` (10.10.0.0/16) and `green` (10.20.0.0/16). `drifter` is a Deployment in `outpost` and takes its address from `default`."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: namespace-annotated
+    description: "The namespace outpost selects the pool green"
+    type: file
+    source: validation/validate-namespace-annotated.sh
+    hint: "Annotate the namespace with ipam.cilium.io/ip-pool=green."
+  - name: drifter-uses-green-pool
+    description: "The running drifter pod has an address from 10.20.0.0/16"
+    type: file
+    source: validation/validate-drifter-uses-green-pool.sh
+    hint: "Restart the drifter Deployment after you annotate the namespace."
+  - name: starfleet-stays-on-default
+    description: "The shuttle pod still uses the default pool and the pools are unchanged"
+    type: file
+    source: validation/validate-starfleet-stays-on-default.sh
+    hint: "Do not annotate starfleet and do not edit the pools."
+teardown:
+  keepCluster: false

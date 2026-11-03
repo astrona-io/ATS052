@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Run The Operator In High Availability (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-040-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "The Deployment `cilium-operator` runs one replica. No evidence report exists."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: operator-has-two-ready-replicas
+    description: "The operator Deployment has two available replicas"
+    type: file
+    source: validation/validate-operator-has-two-ready-replicas.sh
+    hint: "Scale deployment/cilium-operator to 2."
+  - name: operator-pods-on-different-nodes
+    description: "The two operator pods run on different nodes"
+    type: file
+    source: validation/validate-operator-pods-on-different-nodes.sh
+    hint: "The anti-affinity rule needs two nodes."
+  - name: operator-image-recorded
+    description: "The report holds the live operator image"
+    type: file
+    source: validation/validate-operator-image-recorded.sh
+    hint: "Read the image of the container cilium-operator."
+  - name: ciliumnode-count-recorded
+    description: "The report holds the live number of CiliumNode objects"
+    type: file
+    source: validation/validate-ciliumnode-count-recorded.sh
+    hint: "Count the CiliumNode objects."
+teardown:
+  keepCluster: false

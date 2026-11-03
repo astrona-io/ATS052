@@ -1,0 +1,20 @@
+# Cilium Helm values: multi-pool IPAM with native routing.
+operator:
+  replicas: 1
+ipam:
+  mode: multi-pool
+  operator:
+    autoCreateCiliumPodIPPools:
+      default:
+        ipv4:
+          cidrs:
+          - 10.10.0.0/16
+          maskSize: 24
+      green:
+        ipv4:
+          cidrs:
+          - 10.20.0.0/16
+          maskSize: 24
+routingMode: native
+ipv4NativeRoutingCIDR: 10.0.0.0/8
+autoDirectNodeRoutes: true

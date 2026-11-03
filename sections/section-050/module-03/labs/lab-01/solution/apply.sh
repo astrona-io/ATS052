@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Reference solution. Run only by `astrona test`.
+set -euo pipefail
+kubectl -n starfleet create configmap datapath-model --from-literal=routing-mode="$(kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.routing-mode}')" --from-literal=ipv4-native-routing-cidr="$(kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.ipv4-native-routing-cidr}')" --from-literal=auto-direct-node-routes="$(kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.auto-direct-node-routes}')" --from-literal=kube-proxy-replacement="$(kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.kube-proxy-replacement}')" --from-literal=enable-bpf-masquerade="$(kubectl -n kube-system get configmap cilium-config -o jsonpath='{.data.enable-bpf-masquerade}')" --dry-run=client -o yaml | kubectl apply -f -

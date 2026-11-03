@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# IPAM Capstone (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-030-cap
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "Cilium runs in `multi-pool` mode. The pools `default` and `green` exist. The Deployment `probe` has two replicas on the default pool."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: pool-amber-exists
+    description: "The pool amber has the CIDR 10.30.0.0/16 and mask size 24"
+    type: file
+    source: validation/validate-pool-amber-exists.sh
+    hint: "Create a CiliumPodIPPool named amber (apiVersion cilium.io/v2alpha1)."
+  - name: probe-template-annotated
+    description: "The probe pod template selects the pool amber"
+    type: file
+    source: validation/validate-probe-template-annotated.sh
+    hint: "Patch spec.template.metadata.annotations of the Deployment."
+  - name: probe-pods-use-amber
+    description: "Every running probe pod has an address from 10.30.0.0/16"
+    type: file
+    source: validation/validate-probe-pods-use-amber.sh
+    hint: "Wait for the rollout to finish."
+  - name: shuttle-on-default-and-working
+    description: "shuttle keeps its default-pool address and reaches probe"
+    type: file
+    source: validation/validate-shuttle-on-default-and-working.sh
+    hint: "Do not annotate shuttle."
+teardown:
+  keepCluster: false

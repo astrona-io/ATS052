@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Role Of Cilium Capstone (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-010-cap
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "Two replicas of `probe` run, but the Service `probe` selects `app: probe-api`. No network policy and no evidence report exist."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: service-forwards-to-both-pods
+    description: "The Service has two endpoint addresses"
+    type: file
+    source: validation/validate-service-forwards-to-both-pods.sh
+    hint: "Patch the Service selector to app: probe."
+  - name: policy-allows-only-starfleet
+    description: "shuttle reaches probe, drifter does not, through a CiliumNetworkPolicy"
+    type: file
+    source: validation/validate-policy-allows-only-starfleet.sh
+    hint: "Create probe-ingress as a CiliumNetworkPolicy that allows the starfleet namespace on port 9898."
+  - name: evidence-endpoint-count
+    description: "The report holds the live endpoint count"
+    type: file
+    source: validation/validate-evidence-endpoint-count.sh
+    hint: "Count the addresses in the Endpoints object of the Service probe."
+  - name: evidence-probe-identity
+    description: "The report holds the live identity of the probe pods"
+    type: file
+    source: validation/validate-evidence-probe-identity.sh
+    hint: "Read status.identity.id of a probe CiliumEndpoint."
+  - name: evidence-agents-ready
+    description: "The report holds the live ready-agent count"
+    type: file
+    source: validation/validate-evidence-agents-ready.sh
+    hint: "Use status.numberReady of the cilium DaemonSet."
+teardown:
+  keepCluster: false

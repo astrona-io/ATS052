@@ -1,0 +1,9 @@
+# Cilium Helm values with Hubble Relay.
+operator:
+  replicas: 1
+ipam:
+  mode: kubernetes
+hubble:
+  enabled: true
+  relay:
+    enabled: true

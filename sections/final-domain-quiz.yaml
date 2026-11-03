@@ -1,0 +1,357 @@
+# Final domain knowledge check across all five sections.
+schema_version: 1
+kind: question_bank
+id: ats052-final
+course_id: ATS052
+exam_code: CCA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: domain
+  id: architecture
+  title: "Architecture"
+questions:
+  - id: ats052-final-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name what Cilium adds beyond basic pod connectivity"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-a-cni-plugin-does.md
+    prompt: "Which statement describes what Cilium adds on top of a plain CNI plugin that only connects pods?"
+    options:
+      - id: a
+        text: "It replaces the container runtime with its own runtime."
+        explanation: "Cilium does not replace the runtime."
+      - id: b
+        text: "It replaces the Kubernetes scheduler so pods start closer to their peers."
+        explanation: "Cilium does not schedule pods."
+      - id: c
+        text: "It adds identity-based policy, Service translation and observability on the same datapath."
+        explanation: "Correct. Policy by identity, load balancing of Services and Hubble flows are part of Cilium."
+      - id: d
+        text: "It stores application data on every node for faster access."
+        explanation: "Cilium does not store application data."
+    correct_option: c
+    explanation: "Correct. Policy by identity, load balancing of Services and Hubble flows are part of Cilium."
+
+  - id: ats052-final-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Separate Service selection from policy"
+    source_readings:
+      - sections/section-010/module-02/course-01-the-path-of-pod-and-service-traffic.md
+    prompt: "A Service selects three backend pods. A policy denies the client access to the backends. What happens to a request from the client?"
+    options:
+      - id: a
+        text: "The Service ignores the policy and delivers the request."
+        explanation: "Policy applies to traffic through Services as well."
+      - id: b
+        text: "The Service chooses a backend, and the policy is checked for the chosen backend, so the request is dropped."
+        explanation: "Correct. Selection and policy are separate steps, and a denying policy blocks the request after selection."
+      - id: c
+        text: "The Service removes the denied backends from its list."
+        explanation: "A policy does not change the backend list."
+      - id: d
+        text: "The request is delivered to a fourth pod that is allowed."
+        explanation: "Traffic is delivered only to selected backends."
+    correct_option: b
+    explanation: "Correct. Selection and policy are separate steps, and a denying policy blocks the request after selection."
+
+  - id: ats052-final-q03
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Read traffic path facts from the agent"
+    source_readings:
+      - sections/section-010/module-02/course-01-the-path-of-pod-and-service-traffic.md
+    prompt: "Which command output proves that the agent has loaded a Service and its backends into its load balancing maps?"
+    options:
+      - id: a
+        text: "`cilium-dbg bpf lb list` and `cilium-dbg service list` show the Service and its backends."
+        explanation: "Correct. These commands read the Service state of the agent."
+      - id: b
+        text: "`kubectl get nodes` shows the Service backends."
+        explanation: "Nodes do not list Services."
+      - id: c
+        text: "`cilium-dbg identity list` shows the Service backends."
+        explanation: "Identities are not Service entries."
+      - id: d
+        text: "`kubectl get leases` shows the Service backends."
+        explanation: "Leases are for leader election."
+    correct_option: a
+    explanation: "Correct. These commands read the Service state of the agent."
+
+  - id: ats052-final-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Recognise the reserved identities"
+    source_readings:
+      - sections/section-020/module-01/course-01-labels-become-security-identities.md
+    prompt: "Which of these is a reserved identity that Cilium defines without any pod labels?"
+    options:
+      - id: a
+        text: "The identity `starfleet`, for every pod in that namespace."
+        explanation: "Namespaces are not reserved identities."
+      - id: b
+        text: "The identity `probe`, for every Service."
+        explanation: "Services do not have reserved identities."
+      - id: c
+        text: "The identity `operator`, for the operator pods only."
+        explanation: "The operator is not a reserved identity."
+      - id: d
+        text: "The identity `world`, for traffic from outside the cluster."
+        explanation: "Correct. Reserved identities such as host, world and health are built in."
+    correct_option: d
+    explanation: "Correct. Reserved identities such as host, world and health are built in."
+
+  - id: ats052-final-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Define an endpoint"
+    source_readings:
+      - sections/section-020/module-02/course-01-endpoints-and-their-lifecycle.md
+    prompt: "What is a Cilium endpoint?"
+    options:
+      - id: a
+        text: "A Kubernetes Service with its cluster IP."
+        explanation: "A Service is a different object."
+      - id: b
+        text: "A node of the cluster."
+        explanation: "A node is not an endpoint."
+      - id: c
+        text: "A network-attached workload on a node, usually a pod, with its interface, address, identity and policy state."
+        explanation: "Correct. The agent creates one endpoint per pod."
+      - id: d
+        text: "A Deployment with its replica set."
+        explanation: "A Deployment is not an endpoint."
+    correct_option: c
+    explanation: "Correct. The agent creates one endpoint per pod."
+
+  - id: ats052-final-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Know how endpoints are removed"
+    source_readings:
+      - sections/section-020/module-02/course-01-endpoints-and-their-lifecycle.md
+    prompt: "A pod is deleted. What happens to its endpoint?"
+    options:
+      - id: a
+        text: "The endpoint stays until the next node restart."
+        explanation: "The agent removes it at deletion."
+      - id: b
+        text: "The runtime calls `DEL`, the agent removes the endpoint and releases the address, and the `CiliumEndpoint` object disappears."
+        explanation: "Correct. The cleanup follows the CNI `DEL` call."
+      - id: c
+        text: "The operator keeps it for audit."
+        explanation: "The operator removes stale objects."
+      - id: d
+        text: "Hubble deletes it after an hour."
+        explanation: "Hubble does not manage endpoints."
+    correct_option: b
+    explanation: "Correct. The cleanup follows the CNI `DEL` call."
+
+  - id: ats052-final-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the cluster-pool settings"
+    source_readings:
+      - sections/section-030/module-01/course-01-cluster-pool-mode.md
+    prompt: "Which two settings define the cluster pool and the size of each node range?"
+    options:
+      - id: a
+        text: "`cluster-pool-ipv4-cidr` and `cluster-pool-ipv4-mask-size`"
+        explanation: "Correct. The first is the pool and the second is the prefix length of node ranges."
+      - id: b
+        text: "`routing-mode` and `tunnel-protocol`"
+        explanation: "These select the datapath."
+      - id: c
+        text: "`debug` and `enable-hubble`"
+        explanation: "These control logging and observability."
+      - id: d
+        text: "`kube-proxy-replacement` and `enable-bpf-masquerade`"
+        explanation: "These control Service and source translation."
+    correct_option: a
+    explanation: "Correct. The first is the pool and the second is the prefix length of node ranges."
+
+  - id: ats052-final-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe how the agent assigns a pod address"
+    source_readings:
+      - sections/section-030/module-02/course-02-how-the-agent-assigns-pod-addresses.md
+    prompt: "During the CNI `ADD` call, from where does the agent take the address for the new pod?"
+    options:
+      - id: a
+        text: "From a request to the operator for each pod."
+        explanation: "Allocation per pod is local to the agent."
+      - id: b
+        text: "From DNS."
+        explanation: "DNS does not assign addresses."
+      - id: c
+        text: "From the pod manifest, which must list an address."
+        explanation: "Pods do not list addresses."
+      - id: d
+        text: "From the free addresses of the range that belongs to its node."
+        explanation: "Correct. The agent allocates locally from the node range."
+    correct_option: d
+    explanation: "Correct. The agent allocates locally from the node range."
+
+  - id: ats052-final-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Pick the cloud-specific mode"
+    source_readings:
+      - sections/section-030/module-01/course-02-other-ipam-modes.md
+    prompt: "Which IPAM modes take pod addresses from the network of a cloud provider?"
+    options:
+      - id: a
+        text: "Only `cluster-pool`."
+        explanation: "That mode is controlled by the operator."
+      - id: b
+        text: "Only `kubernetes`."
+        explanation: "That mode uses the Kubernetes node CIDR."
+      - id: c
+        text: "The modes `eni`, `azure` and `alibabacloud`, each for one provider."
+        explanation: "Correct. They use the cloud interfaces and addresses."
+      - id: d
+        text: "Only `multi-pool`."
+        explanation: "That mode uses named pools."
+    correct_option: c
+    explanation: "Correct. They use the cloud interfaces and addresses."
+
+  - id: ats052-final-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "List tasks of the agent"
+    source_readings:
+      - sections/section-040/module-01/course-01-what-the-agent-does-on-every-node.md
+    prompt: "Which task belongs to the Cilium agent?"
+    options:
+      - id: a
+        text: "Electing the control-plane leader of Kubernetes."
+        explanation: "That is a Kubernetes task."
+      - id: b
+        text: "Loading eBPF programs and maps and answering the CNI calls of its node."
+        explanation: "Correct. These are core tasks of the agent."
+      - id: c
+        text: "Scheduling pods to nodes."
+        explanation: "That is the scheduler."
+      - id: d
+        text: "Running application containers."
+        explanation: "That is the container runtime."
+    correct_option: b
+    explanation: "Correct. These are core tasks of the agent."
+
+  - id: ats052-final-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Follow the CNI call"
+    source_readings:
+      - sections/section-040/module-02/course-02-the-cni-plugin-and-pod-creation.md
+    prompt: "At pod start, who calls the `cilium-cni` binary?"
+    options:
+      - id: a
+        text: "The container runtime, with the operation `ADD`."
+        explanation: "Correct. The runtime calls the plugin from its CNI configuration."
+      - id: b
+        text: "The Kubernetes scheduler."
+        explanation: "The scheduler only binds pods to nodes."
+      - id: c
+        text: "The Cilium operator."
+        explanation: "The operator is not part of this call."
+      - id: d
+        text: "The Hubble Relay pod."
+        explanation: "Relay is not part of this call."
+    correct_option: a
+    explanation: "Correct. The runtime calls the plugin from its CNI configuration."
+
+  - id: ats052-final-q12
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Diagnose a missing cluster-wide flow view"
+    source_readings:
+      - sections/section-040/module-03/course-02-hubble-relay-peer-service-and-ui.md
+    prompt: "The Service `hubble-relay` has no endpoints and the Deployment has zero ready replicas. Application traffic is fine. What is the effect?"
+    options:
+      - id: a
+        text: "All pod traffic stops."
+        explanation: "Relay is not on the packet path."
+      - id: b
+        text: "Policy stops being enforced."
+        explanation: "Policy runs in the agent."
+      - id: c
+        text: "New pods cannot get addresses."
+        explanation: "Allocation does not depend on Relay."
+      - id: d
+        text: "Only the cluster-wide view of flows is lost. The agents keep recording flows and the datapath is not affected."
+        explanation: "Correct. Relay is a client-facing component and not part of the datapath."
+    correct_option: d
+    explanation: "Correct. Relay is a client-facing component and not part of the datapath."
+
+  - id: ats052-final-q13
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Diagnose a blocked tunnel port"
+    source_readings:
+      - sections/section-050/module-01/course-01-encapsulation-and-the-overlay-datapath.md
+    prompt: "Same-node pod traffic works, but cross-node pod traffic fails in tunnel mode with VXLAN. What do you check first?"
+    options:
+      - id: a
+        text: "Whether the pods have labels."
+        explanation: "Labels do not break the tunnel."
+      - id: b
+        text: "Whether Hubble is enabled."
+        explanation: "Hubble does not carry traffic."
+      - id: c
+        text: "Whether UDP port 8472 is open between the nodes."
+        explanation: "Correct. This is the VXLAN port in Cilium."
+      - id: d
+        text: "Whether the Service has a selector."
+        explanation: "Same-node traffic works, so Services are not the cause."
+    correct_option: c
+    explanation: "Correct. This is the VXLAN port in Cilium."
+
+  - id: ats052-final-q14
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose a route distribution"
+    source_readings:
+      - sections/section-050/module-02/course-02-route-distribution-bgp-and-masquerading.md
+    prompt: "The nodes are in different subnets with routers between them, and you control the routers. Which option distributes the pod ranges?"
+    options:
+      - id: a
+        text: "`auto-direct-node-routes` only."
+        explanation: "It needs the nodes to share a layer 2 network."
+      - id: b
+        text: "BGP, where nodes announce their pod ranges to the routers."
+        explanation: "Correct. Direct node routes need one layer 2 network."
+      - id: c
+        text: "A larger MTU."
+        explanation: "The MTU is not a routing method."
+      - id: d
+        text: "A second operator replica."
+        explanation: "Replicas do not distribute routes."
+    correct_option: b
+    explanation: "Correct. Direct node routes need one layer 2 network."
+
+  - id: ats052-final-q15
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Describe an audit of the datapath model"
+    source_readings:
+      - sections/section-050/module-03/course-02-kube-proxy-replacement-and-masquerading.md
+    prompt: "Which five values of `cilium-config` together describe the datapath model of a cluster?"
+    options:
+      - id: a
+        text: "`routing-mode`, `ipv4-native-routing-cidr`, `auto-direct-node-routes`, `kube-proxy-replacement` and `enable-bpf-masquerade`"
+        explanation: "Correct. They describe routing, translation of Services and translation of sources."
+      - id: b
+        text: "`debug`, `enable-hubble`, `ipam`, `tunnel-protocol` and `mtu`"
+        explanation: "These do not cover Service and masquerade translation."
+      - id: c
+        text: "Only the number of nodes."
+        explanation: "The node count does not describe the model."
+      - id: d
+        text: "Only the version of Kubernetes."
+        explanation: "The version does not describe the model."
+    correct_option: a
+    explanation: "Correct. They describe routing, translation of Services and translation of sources."

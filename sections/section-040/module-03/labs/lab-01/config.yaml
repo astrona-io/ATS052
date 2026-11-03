@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Restore Hubble Relay And Read Its Service (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-040-03-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "Hubble is enabled in the agents and Hubble Relay is installed, but the Deployment `hubble-relay` is scaled to 0 replicas."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: relay-is-available
+    description: "Hubble Relay has one available replica"
+    type: file
+    source: validation/validate-relay-is-available.sh
+    hint: "Scale deployment/hubble-relay to 1."
+  - name: relay-service-has-endpoint
+    description: "The Service hubble-relay has an endpoint address"
+    type: file
+    source: validation/validate-relay-service-has-endpoint.sh
+    hint: "Wait until the relay pod is ready."
+  - name: relay-port-recorded
+    description: "The report holds the live relay Service port"
+    type: file
+    source: validation/validate-relay-port-recorded.sh
+    hint: "Read spec.ports[0].port of the Service hubble-relay."
+  - name: peer-port-recorded
+    description: "The report holds the live peer Service port"
+    type: file
+    source: validation/validate-peer-port-recorded.sh
+    hint: "Read spec.ports[0].port of the Service hubble-peer."
+teardown:
+  keepCluster: false

@@ -1,10 +1,25 @@
 ---
-draft: true
-exam_objectives:
-- Cilium Component Roles
+estimated_duration: 25m
 ---
-# Separate Agent Operator And Relay Roles
 
-Record the images of three different Cilium components.
+# Lab: Change Agent Settings And Restart The Agents
 
-The task and solution use a separate pinned kind cluster. Run `testing/smoke.sh` with its private kubeconfig to verify initial rejection and reference success. Static validation is not live evidence. Runtime verification remains pending.
+Graded lab. **UNTESTED**: the files passed static checks only (`astrona validate`, `bash -n`). The lab has not been run, and the reference solution has not been proven.
+
+The task is in `question.md`; the walkthrough is in `solution.md`.
+
+## Run it
+
+```sh
+astrona run -c sections/section-040/module-01/labs/lab-01
+astrona submit -c sections/section-040/module-01/labs/lab-01
+astrona destroy ats-052-lab-040-01-01
+```
+
+## Checks
+
+| Script | What it proves |
+| --- | --- |
+| `validate-debug-setting-enabled.sh` | The key debug in cilium-config is "true" |
+| `validate-agents-were-restarted.sh` | The DaemonSet was restarted after the change |
+| `validate-all-agents-ready.sh` | One ready agent runs on every node |

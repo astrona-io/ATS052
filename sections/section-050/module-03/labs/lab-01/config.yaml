@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Verify The Datapath Model Of A Cluster (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-050-03-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "Cilium uses native routing with direct node routes, no kube-proxy replacement and iptables masquerading. `shuttle` and `probe` run on different nodes."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: model-keys-recorded-routing-mode
+    description: "The report holds the live value of routing-mode"
+    type: file
+    source: validation/validate-model-keys-recorded-routing-mode.sh
+    hint: "Read routing-mode of cilium-config."
+  - name: model-keys-recorded-ipv4-native-routing-cidr
+    description: "The report holds the live value of ipv4-native-routing-cidr"
+    type: file
+    source: validation/validate-model-keys-recorded-ipv4-native-routing-cidr.sh
+    hint: "Read ipv4-native-routing-cidr of cilium-config."
+  - name: model-keys-recorded-auto-direct-node-routes
+    description: "The report holds the live value of auto-direct-node-routes"
+    type: file
+    source: validation/validate-model-keys-recorded-auto-direct-node-routes.sh
+    hint: "Read auto-direct-node-routes of cilium-config."
+  - name: model-keys-recorded-kube-proxy-replacement
+    description: "The report holds the live value of kube-proxy-replacement"
+    type: file
+    source: validation/validate-model-keys-recorded-kube-proxy-replacement.sh
+    hint: "Read kube-proxy-replacement of cilium-config."
+  - name: model-keys-recorded-enable-bpf-masquerade
+    description: "The report holds the live value of enable-bpf-masquerade"
+    type: file
+    source: validation/validate-model-keys-recorded-enable-bpf-masquerade.sh
+    hint: "Read enable-bpf-masquerade of cilium-config."
+  - name: cross-node-request-works
+    description: "shuttle reaches probe across nodes"
+    type: file
+    source: validation/validate-cross-node-request-works.sh
+    hint: "Do not change the Cilium configuration."
+teardown:
+  keepCluster: false

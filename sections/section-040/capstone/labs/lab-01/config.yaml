@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Component Roles Capstone (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-040-cap
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "The operator has one replica, agent debug logging is off, and `hubble-relay` is scaled to 0."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: operator-ha-on-two-nodes
+    description: "Two operator replicas run on two different nodes"
+    type: file
+    source: validation/validate-operator-ha-on-two-nodes.sh
+    hint: "Scale cilium-operator to 2."
+  - name: agents-debug-and-ready
+    description: "Debug is on, the agents were restarted and all are ready"
+    type: file
+    source: validation/validate-agents-debug-and-ready.sh
+    hint: "Patch cilium-config, then roll out the DaemonSet."
+  - name: relay-restored
+    description: "Hubble Relay is available and its Service has an endpoint"
+    type: file
+    source: validation/validate-relay-restored.sh
+    hint: "Scale deployment/hubble-relay to 1."
+teardown:
+  keepCluster: false

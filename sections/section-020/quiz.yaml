@@ -1,0 +1,265 @@
+# Knowledge check for section 020. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats052-020
+course_id: ATS052
+exam_code: CCA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-020
+  title: "Cilium Architecture"
+questions:
+  - id: ats052-020-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain how labels become a security identity"
+    source_readings:
+      - sections/section-020/module-01/course-01-labels-become-security-identities.md
+    prompt: "How does Cilium decide which security identity a pod gets?"
+    options:
+      - id: a
+        text: "From the set of identity-relevant labels of the pod, so pods with the same labels share an identity."
+        explanation: "Correct. The identity is a number allocated for a label set."
+      - id: b
+        text: "From the pod IP address, which the agent hashes."
+        explanation: "The address is not used to derive the identity."
+      - id: c
+        text: "From the node on which the pod runs."
+        explanation: "The node does not define the identity."
+      - id: d
+        text: "From the name of the pod only."
+        explanation: "The pod name is not the basis."
+    correct_option: a
+    explanation: "Correct. The identity is a number allocated for a label set."
+
+  - id: ats052-020-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Recognise the reserved identities"
+    source_readings:
+      - sections/section-020/module-01/course-01-labels-become-security-identities.md
+    prompt: "Which of these is a reserved identity that Cilium defines without any pod labels?"
+    options:
+      - id: a
+        text: "The identity `starfleet`, for every pod in that namespace."
+        explanation: "Namespaces are not reserved identities."
+      - id: b
+        text: "The identity `probe`, for every Service."
+        explanation: "Services do not have reserved identities."
+      - id: c
+        text: "The identity `operator`, for the operator pods only."
+        explanation: "The operator is not a reserved identity."
+      - id: d
+        text: "The identity `world`, for traffic from outside the cluster."
+        explanation: "Correct. Reserved identities such as host, world and health are built in."
+    correct_option: d
+    explanation: "Correct. Reserved identities such as host, world and health are built in."
+
+  - id: ats052-020-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Diagnose a policy that stops matching after a label change"
+    source_readings:
+      - sections/section-020/module-01/course-01-labels-become-security-identities.md
+    prompt: "A policy allows pods with `role=client`. After a deployment change, the client pods have `role=consumer` and are denied. What explains this?"
+    options:
+      - id: a
+        text: "The agent forgot the policy after the restart."
+        explanation: "Policy is restored on restart."
+      - id: b
+        text: "The operator removed the policy."
+        explanation: "The operator does not remove policy."
+      - id: c
+        text: "The label change gave the pods a different identity, so the rule no longer matches them."
+        explanation: "Correct. A changed label set leads to another identity."
+      - id: d
+        text: "The pods lost their IP addresses."
+        explanation: "The addresses do not decide the rule."
+    correct_option: c
+    explanation: "Correct. A changed label set leads to another identity."
+
+  - id: ats052-020-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe how the datapath learns the identity of an address"
+    source_readings:
+      - sections/section-020/module-01/course-02-identity-in-the-datapath.md
+    prompt: "On a node, the datapath receives a packet from a pod address on another node. Which structure maps this address to an identity?"
+    options:
+      - id: a
+        text: "The Kubernetes Node object."
+        explanation: "Nodes do not map pod addresses to identities."
+      - id: b
+        text: "The ipcache, which maps addresses to identities."
+        explanation: "Correct. The ipcache holds the address to identity mapping."
+      - id: c
+        text: "The CNI configuration file."
+        explanation: "The file only names the plugin."
+      - id: d
+        text: "The kube-proxy rules."
+        explanation: "Kube-proxy does not know identities."
+    correct_option: b
+    explanation: "Correct. The ipcache holds the address to identity mapping."
+
+  - id: ats052-020-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Read the identity list from the agent"
+    source_readings:
+      - sections/section-020/module-01/course-02-identity-in-the-datapath.md
+    prompt: "Which command prints the identities known to an agent together with their labels?"
+    options:
+      - id: a
+        text: "`cilium-dbg identity list`"
+        explanation: "Correct. This command lists identities and the labels behind them."
+      - id: b
+        text: "`cilium-dbg service list`"
+        explanation: "This lists Services."
+      - id: c
+        text: "`kubectl get ciliumnodes`"
+        explanation: "This lists nodes."
+      - id: d
+        text: "`kubectl get leases`"
+        explanation: "This lists leases."
+    correct_option: a
+    explanation: "Correct. This command lists identities and the labels behind them."
+
+  - id: ats052-020-q06
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Define an endpoint"
+    source_readings:
+      - sections/section-020/module-02/course-01-endpoints-and-their-lifecycle.md
+    prompt: "What is a Cilium endpoint?"
+    options:
+      - id: a
+        text: "A Kubernetes Service with its cluster IP."
+        explanation: "A Service is a different object."
+      - id: b
+        text: "A node of the cluster."
+        explanation: "A node is not an endpoint."
+      - id: c
+        text: "A Deployment with its replica set."
+        explanation: "A Deployment is not an endpoint."
+      - id: d
+        text: "A network-attached workload on a node, usually a pod, with its interface, address, identity and policy state."
+        explanation: "Correct. The agent creates one endpoint per pod."
+    correct_option: d
+    explanation: "Correct. The agent creates one endpoint per pod."
+
+  - id: ats052-020-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the CiliumEndpoint fields"
+    source_readings:
+      - sections/section-020/module-02/course-01-endpoints-and-their-lifecycle.md
+    prompt: "Which fields of a `CiliumEndpoint` tell you the identity number and the state of the endpoint?"
+    options:
+      - id: a
+        text: "`spec.replicas` and `spec.selector`"
+        explanation: "These belong to workload objects."
+      - id: b
+        text: "`metadata.uid` and `metadata.generation`"
+        explanation: "These do not describe identity or state."
+      - id: c
+        text: "`status.identity.id` and `status.state`"
+        explanation: "Correct. These fields carry the identity number and the state."
+      - id: d
+        text: "`spec.clusterIP` and `spec.ports`"
+        explanation: "These belong to a Service."
+    correct_option: c
+    explanation: "Correct. These fields carry the identity number and the state."
+
+  - id: ats052-020-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Compare desired and realised state"
+    source_readings:
+      - sections/section-020/module-02/course-02-desired-and-realised-state.md
+    prompt: "A policy exists in the API, but traffic is not yet filtered as the policy says. Which explanation fits the idea of desired and realised state?"
+    options:
+      - id: a
+        text: "The policy object is invalid and is ignored forever."
+        explanation: "An invalid object would be reported."
+      - id: b
+        text: "The agent has not yet applied the desired state to the datapath of that endpoint, so the realised state differs."
+        explanation: "Correct. The agent converges the datapath to the desired state over time."
+      - id: c
+        text: "The operator holds the policy until the next restart."
+        explanation: "The operator does not hold policy."
+      - id: d
+        text: "Policy only applies to new nodes."
+        explanation: "Policy applies to existing endpoints."
+    correct_option: b
+    explanation: "Correct. The agent converges the datapath to the desired state over time."
+
+  - id: ats052-020-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Find the state of an endpoint stuck while regenerating"
+    source_readings:
+      - sections/section-020/module-02/course-02-desired-and-realised-state.md
+    prompt: "An endpoint shows the state `regenerating` for a long time. Which action gives the most direct information?"
+    options:
+      - id: a
+        text: "Read the agent log and run `cilium-dbg endpoint get` for that endpoint on its node."
+        explanation: "Correct. The agent of the node holds the details of its endpoints."
+      - id: b
+        text: "Restart the Kubernetes API server."
+        explanation: "The API server is not the cause here."
+      - id: c
+        text: "Delete all nodes."
+        explanation: "This is destructive and does not diagnose anything."
+      - id: d
+        text: "Scale the Hubble Relay Deployment."
+        explanation: "Relay does not change endpoint state."
+    correct_option: a
+    explanation: "Correct. The agent of the node holds the details of its endpoints."
+
+  - id: ats052-020-q10
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name what the identity travels with"
+    source_readings:
+      - sections/section-020/module-01/course-02-identity-in-the-datapath.md
+    prompt: "Between two nodes, why can the receiving side apply identity-based policy to a packet from a remote pod?"
+    options:
+      - id: a
+        text: "It asks the sender pod by name."
+        explanation: "Packets do not carry pod names."
+      - id: b
+        text: "It reads the Kubernetes event log."
+        explanation: "Events are not used in the datapath."
+      - id: c
+        text: "It reads the application payload."
+        explanation: "Identity does not depend on the payload."
+      - id: d
+        text: "It learns the identity from the tunnel header or from the ipcache entry of the source address."
+        explanation: "Correct. Either source of the identity lets the node apply the rule."
+    correct_option: d
+    explanation: "Correct. Either source of the identity lets the node apply the rule."
+
+  - id: ats052-020-q11
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Know how endpoints are removed"
+    source_readings:
+      - sections/section-020/module-02/course-01-endpoints-and-their-lifecycle.md
+    prompt: "A pod is deleted. What happens to its endpoint?"
+    options:
+      - id: a
+        text: "The endpoint stays until the next node restart."
+        explanation: "The agent removes it at deletion."
+      - id: b
+        text: "The operator keeps it for audit."
+        explanation: "The operator removes stale objects."
+      - id: c
+        text: "The runtime calls `DEL`, the agent removes the endpoint and releases the address, and the `CiliumEndpoint` object disappears."
+        explanation: "Correct. The cleanup follows the CNI `DEL` call."
+      - id: d
+        text: "Hubble deletes it after an hour."
+        explanation: "Hubble does not manage endpoints."
+    correct_option: c
+    explanation: "Correct. The cleanup follows the CNI `DEL` call."

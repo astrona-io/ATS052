@@ -1,0 +1,265 @@
+# Knowledge check for section 030. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats052-030
+course_id: ATS052
+exam_code: CCA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-030
+  title: "IP Address Management (IPAM) with Cilium"
+questions:
+  - id: ats052-030-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what cluster-pool IPAM does"
+    source_readings:
+      - sections/section-030/module-01/course-01-cluster-pool-mode.md
+    prompt: "In cluster-pool mode, who splits the cluster pod CIDR into ranges for the nodes?"
+    options:
+      - id: a
+        text: "The Cilium operator, which writes each range into the `CiliumNode` of its node."
+        explanation: "Correct. The operator allocates node ranges from the cluster pool."
+      - id: b
+        text: "The kube-controller-manager."
+        explanation: "That is the Kubernetes mode, not cluster-pool."
+      - id: c
+        text: "The container runtime."
+        explanation: "The runtime does not allocate ranges."
+      - id: d
+        text: "The Hubble server."
+        explanation: "Hubble does not allocate addresses."
+    correct_option: a
+    explanation: "Correct. The operator allocates node ranges from the cluster pool."
+
+  - id: ats052-030-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the cluster-pool settings"
+    source_readings:
+      - sections/section-030/module-01/course-01-cluster-pool-mode.md
+    prompt: "Which two settings define the cluster pool and the size of each node range?"
+    options:
+      - id: a
+        text: "`routing-mode` and `tunnel-protocol`"
+        explanation: "These select the datapath."
+      - id: b
+        text: "`debug` and `enable-hubble`"
+        explanation: "These control logging and observability."
+      - id: c
+        text: "`kube-proxy-replacement` and `enable-bpf-masquerade`"
+        explanation: "These control Service and source translation."
+      - id: d
+        text: "`cluster-pool-ipv4-cidr` and `cluster-pool-ipv4-mask-size`"
+        explanation: "Correct. The first is the pool and the second is the prefix length of node ranges."
+    correct_option: d
+    explanation: "Correct. The first is the pool and the second is the prefix length of node ranges."
+
+  - id: ats052-030-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose between IPAM modes"
+    source_readings:
+      - sections/section-030/module-01/course-02-other-ipam-modes.md
+    prompt: "A cluster must let the Kubernetes control plane assign the pod CIDR of each node. Which IPAM mode fits?"
+    options:
+      - id: a
+        text: "`cluster-pool`, where the operator allocates the ranges."
+        explanation: "That mode is controlled by Cilium."
+      - id: b
+        text: "`multi-pool`, where each pod chooses a pool."
+        explanation: "That mode uses named pools."
+      - id: c
+        text: "`kubernetes`, where the agent uses the pod CIDR that Kubernetes put on the node."
+        explanation: "Correct. In this mode the node object carries the range."
+      - id: d
+        text: "`eni`, where addresses come from the cloud network interfaces."
+        explanation: "That mode is for one cloud provider."
+    correct_option: c
+    explanation: "Correct. In this mode the node object carries the range."
+
+  - id: ats052-030-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Trace a pod address to its node range"
+    source_readings:
+      - sections/section-030/module-02/course-01-how-the-operator-allocates-node-ranges.md
+    prompt: "A pod has the address 10.100.1.37. Where do you find the range of its node?"
+    options:
+      - id: a
+        text: "In the labels of the pod."
+        explanation: "Pod labels do not hold ranges."
+      - id: b
+        text: "In `spec.ipam.podCIDRs` of the `CiliumNode` for that node."
+        explanation: "Correct. The CiliumNode object carries the ranges of the node."
+      - id: c
+        text: "In the Service object of the pod."
+        explanation: "Services do not hold node ranges."
+      - id: d
+        text: "In the lease of the operator."
+        explanation: "The lease holds a holder name and a time."
+    correct_option: b
+    explanation: "Correct. The CiliumNode object carries the ranges of the node."
+
+  - id: ats052-030-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Explain the effect of an exhausted node range"
+    source_readings:
+      - sections/section-030/module-02/course-01-how-the-operator-allocates-node-ranges.md
+    prompt: "All addresses of the range of a node are in use, and a new pod is scheduled there. What happens?"
+    options:
+      - id: a
+        text: "The agent cannot allocate an address, and the pod stays in `ContainerCreating` with an allocation error."
+        explanation: "Correct. The CNI call fails at the allocation step."
+      - id: b
+        text: "The pod receives an address from another node range."
+        explanation: "Addresses come from the range of the node."
+      - id: c
+        text: "The scheduler moves the pod automatically after the error."
+        explanation: "The pod is already bound to the node."
+      - id: d
+        text: "The operator deletes an older pod."
+        explanation: "The operator does not delete running pods."
+    correct_option: a
+    explanation: "Correct. The CNI call fails at the allocation step."
+
+  - id: ats052-030-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe how the agent assigns a pod address"
+    source_readings:
+      - sections/section-030/module-02/course-02-how-the-agent-assigns-pod-addresses.md
+    prompt: "During the CNI `ADD` call, from where does the agent take the address for the new pod?"
+    options:
+      - id: a
+        text: "From a request to the operator for each pod."
+        explanation: "Allocation per pod is local to the agent."
+      - id: b
+        text: "From DNS."
+        explanation: "DNS does not assign addresses."
+      - id: c
+        text: "From the pod manifest, which must list an address."
+        explanation: "Pods do not list addresses."
+      - id: d
+        text: "From the free addresses of the range that belongs to its node."
+        explanation: "Correct. The agent allocates locally from the node range."
+    correct_option: d
+    explanation: "Correct. The agent allocates locally from the node range."
+
+  - id: ats052-030-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Select a pool for a namespace in multi-pool mode"
+    source_readings:
+      - sections/section-030/module-03/course-01-pools-and-pool-selection.md
+    prompt: "How does a workload select a `CiliumPodIPPool` in multi-pool mode?"
+    options:
+      - id: a
+        text: "With the label `pool=name` on the node."
+        explanation: "The pool is selected for the pod, not for the node."
+      - id: b
+        text: "With a field in the Service."
+        explanation: "Services do not choose pools."
+      - id: c
+        text: "With the annotation `ipam.cilium.io/ip-pool` on the pod or on the namespace."
+        explanation: "Correct. The annotation names the pool."
+      - id: d
+        text: "With the `debug` setting of the agent."
+        explanation: "That setting is for logging."
+    correct_option: c
+    explanation: "Correct. The annotation names the pool."
+
+  - id: ats052-030-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Know when a pool selection is read"
+    source_readings:
+      - sections/section-030/module-03/course-02-requirements-limits-and-moving-workloads.md
+    prompt: "A pod already runs with an address from the `default` pool. You add the pool annotation for `green` to its namespace. What happens to this pod?"
+    options:
+      - id: a
+        text: "The agent changes the address of the pod at once."
+        explanation: "Addresses of running pods do not change."
+      - id: b
+        text: "Nothing. The annotation is read when a pod is created, so only new pods use the new pool."
+        explanation: "Correct. A running pod keeps its address."
+      - id: c
+        text: "The pod is restarted by the operator."
+        explanation: "The operator does not restart pods."
+      - id: d
+        text: "The pod is deleted."
+        explanation: "Nothing deletes the pod."
+    correct_option: b
+    explanation: "Correct. A running pod keeps its address."
+
+  - id: ats052-030-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Know a requirement of multi-pool"
+    source_readings:
+      - sections/section-030/module-03/course-02-requirements-limits-and-moving-workloads.md
+    prompt: "Which statement about the routing of multi-pool addresses is correct?"
+    options:
+      - id: a
+        text: "The pool addresses must be reachable between nodes, so native routing or another route setup is needed that covers all pools."
+        explanation: "Correct. The network must be able to route the pool ranges."
+      - id: b
+        text: "Pools work only with a tunnel and need no routes."
+        explanation: "This option leaves the pool ranges without routes between nodes, so cross-node traffic would fail."
+      - id: c
+        text: "Each pool needs its own cluster."
+        explanation: "Pools share a cluster."
+      - id: d
+        text: "Pools work only on a single node."
+        explanation: "Pools work across nodes."
+    correct_option: a
+    explanation: "Correct. The network must be able to route the pool ranges."
+
+  - id: ats052-030-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Calculate the size of node ranges"
+    source_readings:
+      - sections/section-030/module-01/course-01-cluster-pool-mode.md
+    prompt: "The cluster pool is 10.100.0.0/16 and the mask size per node is 24. How many addresses does each node range hold in total, and how many node ranges fit into the pool?"
+    options:
+      - id: a
+        text: "24 addresses per range and 16 ranges."
+        explanation: "These numbers are the prefix lengths, not counts."
+      - id: b
+        text: "65536 addresses per range and one range."
+        explanation: "That is the size of the whole /16."
+      - id: c
+        text: "512 addresses per range and 128 ranges."
+        explanation: "This does not match a /24."
+      - id: d
+        text: "256 addresses per node range, and 256 node ranges in the pool."
+        explanation: "Correct. A /24 holds 256 addresses, and a /16 holds 256 blocks of /24."
+    correct_option: d
+    explanation: "Correct. A /24 holds 256 addresses, and a /16 holds 256 blocks of /24."
+
+  - id: ats052-030-q11
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Pick the cloud-specific mode"
+    source_readings:
+      - sections/section-030/module-01/course-02-other-ipam-modes.md
+    prompt: "Which IPAM modes take pod addresses from the network of a cloud provider?"
+    options:
+      - id: a
+        text: "Only `cluster-pool`."
+        explanation: "That mode is controlled by the operator."
+      - id: b
+        text: "Only `kubernetes`."
+        explanation: "That mode uses the Kubernetes node CIDR."
+      - id: c
+        text: "The modes `eni`, `azure` and `alibabacloud`, each for one provider."
+        explanation: "Correct. They use the cloud interfaces and addresses."
+      - id: d
+        text: "Only `multi-pool`."
+        explanation: "That mode uses named pools."
+    correct_option: c
+    explanation: "Correct. They use the cloud interfaces and addresses."

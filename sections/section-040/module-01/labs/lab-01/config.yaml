@@ -1,11 +1,12 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Change Agent Settings And Restart The Agents (LAB). UNTESTED: static checks only. Graded against the live cluster.
 apiVersion: astrona.io/v1
 metadata:
   name: ats-052-lab-040-01-01
   docs:
-    prerequisites: docs/prerequisites.md
-    examQuestion: question.md
-    caseStudy: docs/case-study.md
-    guide: solution.md
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
 runtime:
   type: kind
   kind:
@@ -17,18 +18,32 @@ runtime:
       podSubnet: 10.244.0.0/16
 bootstrap:
   init:
-  - name: seed-private-environment
+  - name: install-cilium-and-seed
+    description: "Cilium agents run on both nodes with debug logging switched off (`debug: \"false\"` in `cilium-config`)."
     type: file
     source: bootstrap/setup.sh
-teardown:
-  keepCluster: false
 testing:
   init:
-  - name: reference-result
+  - name: apply-reference-solution
+    description: Apply the reference solution
     type: file
     source: solution/apply.sh
 validation:
-  script:
-    name: verify-fields-and-live-evidence
+  scripts:
+  - name: debug-setting-enabled
+    description: "The key debug in cilium-config is \"true\""
     type: file
-    source: validate.sh
+    source: validation/validate-debug-setting-enabled.sh
+    hint: "Patch the ConfigMap cilium-config in kube-system."
+  - name: agents-were-restarted
+    description: "The DaemonSet was restarted after the change"
+    type: file
+    source: validation/validate-agents-were-restarted.sh
+    hint: "Use kubectl rollout restart on daemonset/cilium."
+  - name: all-agents-ready
+    description: "One ready agent runs on every node"
+    type: file
+    source: validation/validate-all-agents-ready.sh
+    hint: "Wait for kubectl rollout status daemonset/cilium."
+teardown:
+  keepCluster: false

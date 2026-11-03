@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Datapath Models Capstone (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-050-cap
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "Cilium uses native routing with `auto-direct-node-routes` set to `\"false\"`. Cross-node requests fail."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: native-routing-with-direct-routes
+    description: "Routing stays native and direct node routes are enabled"
+    type: file
+    source: validation/validate-native-routing-with-direct-routes.sh
+    hint: "Patch auto-direct-node-routes to \"true\" and restart the agents."
+  - name: cross-node-request-works
+    description: "shuttle reaches probe across nodes"
+    type: file
+    source: validation/validate-cross-node-request-works.sh
+    hint: "Wait for the agents to be ready."
+  - name: evidence-routing
+    description: "The report holds the live routing settings"
+    type: file
+    source: validation/validate-evidence-routing.sh
+    hint: "Read routing-mode and ipv4-native-routing-cidr of cilium-config."
+  - name: evidence-nodes
+    description: "The report names the nodes of probe and shuttle"
+    type: file
+    source: validation/validate-evidence-nodes.sh
+    hint: "Read spec.nodeName of both pods."
+teardown:
+  keepCluster: false

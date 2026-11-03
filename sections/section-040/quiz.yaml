@@ -1,0 +1,288 @@
+# Knowledge check for section 040. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats052-040
+course_id: ATS052
+exam_code: CCA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-040
+  title: "Cilium Component Roles"
+questions:
+  - id: ats052-040-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe how the agent is deployed"
+    source_readings:
+      - sections/section-040/module-01/course-01-what-the-agent-does-on-every-node.md
+    prompt: "How is the Cilium agent deployed on a node?"
+    options:
+      - id: a
+        text: "As a pod of the DaemonSet `cilium`, with the host network and elevated privileges."
+        explanation: "Correct. One agent runs on every node."
+      - id: b
+        text: "As a Deployment with three replicas for the whole cluster."
+        explanation: "That would not give one agent per node."
+      - id: c
+        text: "As a StatefulSet that holds the database of the cluster."
+        explanation: "The agent is not a StatefulSet."
+      - id: d
+        text: "As a CronJob that runs every hour."
+        explanation: "The agent runs all the time."
+    correct_option: a
+    explanation: "Correct. One agent runs on every node."
+
+  - id: ats052-040-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "List tasks of the agent"
+    source_readings:
+      - sections/section-040/module-01/course-01-what-the-agent-does-on-every-node.md
+    prompt: "Which task belongs to the Cilium agent?"
+    options:
+      - id: a
+        text: "Electing the control-plane leader of Kubernetes."
+        explanation: "That is a Kubernetes task."
+      - id: b
+        text: "Scheduling pods to nodes."
+        explanation: "That is the scheduler."
+      - id: c
+        text: "Running application containers."
+        explanation: "That is the container runtime."
+      - id: d
+        text: "Loading eBPF programs and maps and answering the CNI calls of its node."
+        explanation: "Correct. These are core tasks of the agent."
+    correct_option: d
+    explanation: "Correct. These are core tasks of the agent."
+
+  - id: ats052-040-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know when configuration is read"
+    source_readings:
+      - sections/section-040/module-01/course-02-configuration-restarts-and-debugging.md
+    prompt: "You edit the `debug` key in `cilium-config`. The running agents do not log in debug mode yet. Why?"
+    options:
+      - id: a
+        text: "The ConfigMap is read only once a day."
+        explanation: "There is no such schedule."
+      - id: b
+        text: "Debug mode needs a new Kubernetes version."
+        explanation: "The version is not the reason."
+      - id: c
+        text: "The agent reads the ConfigMap at start, so a restart is needed."
+        explanation: "Correct. A rolling restart of the DaemonSet applies the change."
+      - id: d
+        text: "The operator must copy the value into each pod."
+        explanation: "The agents read the ConfigMap themselves."
+    correct_option: c
+    explanation: "Correct. A rolling restart of the DaemonSet applies the change."
+
+  - id: ats052-040-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe the effect of an agent restart"
+    source_readings:
+      - sections/section-040/module-01/course-02-configuration-restarts-and-debugging.md
+    prompt: "During a rolling restart of the agents, what happens to the traffic of pods that already run?"
+    options:
+      - id: a
+        text: "All traffic stops until every agent is ready."
+        explanation: "Pinned programs keep forwarding."
+      - id: b
+        text: "It continues, because the kernel programs and maps stay in place, but new pods and policy changes wait."
+        explanation: "Correct. The pinned programs keep forwarding."
+      - id: c
+        text: "All pods are restarted."
+        explanation: "Pods are not restarted."
+      - id: d
+        text: "Only traffic to Services stops."
+        explanation: "Service maps stay in place too."
+    correct_option: b
+    explanation: "Correct. The pinned programs keep forwarding."
+
+  - id: ats052-040-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe the operator"
+    source_readings:
+      - sections/section-040/module-02/course-01-the-cilium-operator.md
+    prompt: "Which task does the Cilium operator do?"
+    options:
+      - id: a
+        text: "It allocates node ranges in some IPAM modes and removes stale `CiliumNode`, `CiliumIdentity` and `CiliumEndpoint` objects."
+        explanation: "Correct. These are cluster-wide tasks."
+      - id: b
+        text: "It forwards packets between pods."
+        explanation: "The datapath does this."
+      - id: c
+        text: "It answers the CNI `ADD` call."
+        explanation: "The agent does this through the CNI binary."
+      - id: d
+        text: "It stores flows for Hubble."
+        explanation: "The agent keeps recent flows."
+    correct_option: a
+    explanation: "Correct. These are cluster-wide tasks."
+
+  - id: ats052-040-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Explain operator leader election"
+    source_readings:
+      - sections/section-040/module-02/course-01-the-cilium-operator.md
+    prompt: "Two operator replicas run. How do they avoid doing the same task twice?"
+    options:
+      - id: a
+        text: "They split the nodes by name."
+        explanation: "They do not split by name."
+      - id: b
+        text: "They both work and the API picks one result."
+        explanation: "Both working could conflict, so one leads."
+      - id: c
+        text: "They use a load balancer."
+        explanation: "There is no load balancer between them."
+      - id: d
+        text: "They use leader election with a Lease object. Only the holder works, and the other waits."
+        explanation: "Correct. A standby takes over when the lease expires."
+    correct_option: d
+    explanation: "Correct. A standby takes over when the lease expires."
+
+  - id: ats052-040-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Follow the CNI call"
+    source_readings:
+      - sections/section-040/module-02/course-02-the-cni-plugin-and-pod-creation.md
+    prompt: "At pod start, who calls the `cilium-cni` binary?"
+    options:
+      - id: a
+        text: "The Kubernetes scheduler."
+        explanation: "The scheduler only binds pods to nodes."
+      - id: b
+        text: "The Cilium operator."
+        explanation: "The operator is not part of this call."
+      - id: c
+        text: "The container runtime, with the operation `ADD`."
+        explanation: "Correct. The runtime calls the plugin from its CNI configuration."
+      - id: d
+        text: "The Hubble Relay pod."
+        explanation: "Relay is not part of this call."
+    correct_option: c
+    explanation: "Correct. The runtime calls the plugin from its CNI configuration."
+
+  - id: ats052-040-q08
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Diagnose a pod stuck in ContainerCreating"
+    source_readings:
+      - sections/section-040/module-02/course-02-the-cni-plugin-and-pod-creation.md
+    prompt: "A new pod stays in `ContainerCreating`, and its event says that the network plugin is not ready. Running pods work. What is the most likely cause?"
+    options:
+      - id: a
+        text: "The Service of the pod has no endpoints."
+        explanation: "That affects traffic and not the sandbox."
+      - id: b
+        text: "The agent is not running or not ready on that node, or the CNI files are missing."
+        explanation: "Correct. The CNI call at pod start fails, and running pods are not affected."
+      - id: c
+        text: "The Hubble UI is down."
+        explanation: "The UI is not part of pod start."
+      - id: d
+        text: "The pod has too many labels."
+        explanation: "Labels do not cause this."
+    correct_option: b
+    explanation: "Correct. The CNI call at pod start fails, and running pods are not affected."
+
+  - id: ats052-040-q09
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe a Hubble flow"
+    source_readings:
+      - sections/section-040/module-03/course-01-the-hubble-server-and-flows.md
+    prompt: "What does a Hubble flow record?"
+    options:
+      - id: a
+        text: "A record of network activity with source, destination, identities, protocol details and a verdict."
+        explanation: "Correct. The verdict can be forwarded or dropped."
+      - id: b
+        text: "A backup of the Kubernetes API database."
+        explanation: "Flows are not backups."
+      - id: c
+        text: "The logs of an application."
+        explanation: "Flows describe network activity."
+      - id: d
+        text: "A list of the nodes of the cluster."
+        explanation: "Nodes are not flows."
+    correct_option: a
+    explanation: "Correct. The verdict can be forwarded or dropped."
+
+  - id: ats052-040-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know where the Hubble server runs"
+    source_readings:
+      - sections/section-040/module-03/course-01-the-hubble-server-and-flows.md
+    prompt: "Where does the Hubble server run, and what does it see?"
+    options:
+      - id: a
+        text: "In the operator. It sees the whole cluster."
+        explanation: "The operator does not run Hubble."
+      - id: b
+        text: "In a separate pod per Service."
+        explanation: "No such pod exists."
+      - id: c
+        text: "In the kube-apiserver."
+        explanation: "The API server does not create flows."
+      - id: d
+        text: "Inside the agent on every node. It sees the traffic of its own node."
+        explanation: "Correct. It keeps recent flows in a ring buffer."
+    correct_option: d
+    explanation: "Correct. It keeps recent flows in a ring buffer."
+
+  - id: ats052-040-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe Hubble Relay"
+    source_readings:
+      - sections/section-040/module-03/course-02-hubble-relay-peer-service-and-ui.md
+    prompt: "What does Hubble Relay do?"
+    options:
+      - id: a
+        text: "It stores all flows for one year."
+        explanation: "Relay stores nothing."
+      - id: b
+        text: "It enforces policy between nodes."
+        explanation: "Relay does not enforce policy."
+      - id: c
+        text: "It connects to the Hubble servers of all agents and offers one cluster-wide API."
+        explanation: "Correct. It finds the agents through the peer service."
+      - id: d
+        text: "It allocates pod addresses."
+        explanation: "Allocation is done by IPAM."
+    correct_option: c
+    explanation: "Correct. It finds the agents through the peer service."
+
+  - id: ats052-040-q12
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Diagnose a missing cluster-wide flow view"
+    source_readings:
+      - sections/section-040/module-03/course-02-hubble-relay-peer-service-and-ui.md
+    prompt: "The Service `hubble-relay` has no endpoints and the Deployment has zero ready replicas. Application traffic is fine. What is the effect?"
+    options:
+      - id: a
+        text: "All pod traffic stops."
+        explanation: "Relay is not on the packet path."
+      - id: b
+        text: "Only the cluster-wide view of flows is lost. The agents keep recording flows and the datapath is not affected."
+        explanation: "Correct. Relay is a client-facing component and not part of the datapath."
+      - id: c
+        text: "Policy stops being enforced."
+        explanation: "Policy runs in the agent."
+      - id: d
+        text: "New pods cannot get addresses."
+        explanation: "Allocation does not depend on Relay."
+    correct_option: b
+    explanation: "Correct. Relay is a client-facing component and not part of the datapath."

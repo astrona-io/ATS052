@@ -1,0 +1,242 @@
+# Knowledge check for section 010. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats052-010
+course_id: ATS052
+exam_code: CCA
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-010
+  title: "Understand the Role of Cilium in Kubernetes Environments"
+questions:
+  - id: ats052-010-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what the CNI contract requires and which Cilium component receives the call"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-a-cni-plugin-does.md
+    prompt: "The container runtime creates the network namespace of a new pod and calls the CNI binary with `ADD`. In a Cilium cluster, what does `cilium-cni` do with this call?"
+    options:
+      - id: a
+        text: "It forwards the request over a local socket to the Cilium agent, which allocates the address and builds the endpoint."
+        explanation: "Correct. The binary only relays the call. The agent holds the state and does the work."
+      - id: b
+        text: "It allocates the pod address itself and writes the routes into the pod."
+        explanation: "The binary is a thin client and does not allocate addresses."
+      - id: c
+        text: "It sends the request to the Kubernetes API server, which allocates the address."
+        explanation: "The API server is not part of the CNI call path."
+      - id: d
+        text: "It asks the Cilium operator to create the interface on the node."
+        explanation: "The operator does cluster-wide tasks and does not handle the call of a pod."
+    correct_option: a
+    explanation: "Correct. The binary only relays the call. The agent holds the state and does the work."
+
+  - id: ats052-010-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name what Cilium adds beyond basic pod connectivity"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-a-cni-plugin-does.md
+    prompt: "Which statement describes what Cilium adds on top of a plain CNI plugin that only connects pods?"
+    options:
+      - id: a
+        text: "It replaces the container runtime with its own runtime."
+        explanation: "Cilium does not replace the runtime."
+      - id: b
+        text: "It replaces the Kubernetes scheduler so pods start closer to their peers."
+        explanation: "Cilium does not schedule pods."
+      - id: c
+        text: "It stores application data on every node for faster access."
+        explanation: "Cilium does not store application data."
+      - id: d
+        text: "It adds identity-based policy, Service translation and observability on the same datapath."
+        explanation: "Correct. Policy by identity, load balancing of Services and Hubble flows are part of Cilium."
+    correct_option: d
+    explanation: "Correct. Policy by identity, load balancing of Services and Hubble flows are part of Cilium."
+
+  - id: ats052-010-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain the role of the eBPF verifier"
+    source_readings:
+      - sections/section-010/module-01/course-02-ebpf-and-the-cilium-datapath.md
+    prompt: "Before the kernel runs an eBPF program that the agent loaded, the verifier checks it. What is the purpose of this check?"
+    options:
+      - id: a
+        text: "It signs the program so that other nodes can trust it."
+        explanation: "The verifier does not sign programs."
+      - id: b
+        text: "It compiles the program to the instruction set of the node."
+        explanation: "Compiling is a separate step and not the task of the verifier."
+      - id: c
+        text: "It proves that the program terminates and accesses memory safely, and rejects it otherwise."
+        explanation: "Correct. The verifier protects the kernel from programs that could crash or loop."
+      - id: d
+        text: "It copies the program to the other nodes of the cluster."
+        explanation: "The verifier does not distribute programs."
+    correct_option: c
+    explanation: "Correct. The verifier protects the kernel from programs that could crash or loop."
+
+  - id: ats052-010-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe where Cilium attaches eBPF programs and what maps do"
+    source_readings:
+      - sections/section-010/module-01/course-02-ebpf-and-the-cilium-datapath.md
+    prompt: "Which description of eBPF maps and hooks in the Cilium datapath is correct?"
+    options:
+      - id: a
+        text: "Maps are programs and hooks are data tables."
+        explanation: "The roles are reversed."
+      - id: b
+        text: "Programs attach at hooks such as the traffic control hook of an interface, and maps hold the state that they read, such as policy and Service entries."
+        explanation: "Correct. Hooks decide when a program runs, and maps hold the shared state."
+      - id: c
+        text: "Maps run only in user space and hooks run only in the agent."
+        explanation: "Maps live in the kernel and are read by the programs."
+      - id: d
+        text: "Hooks are used only for logging and maps only for metrics."
+        explanation: "Both are used for forwarding and policy."
+    correct_option: b
+    explanation: "Correct. Hooks decide when a program runs, and maps hold the shared state."
+
+  - id: ats052-010-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Trace how a connection to a Service address reaches a backend pod"
+    source_readings:
+      - sections/section-010/module-02/course-01-the-path-of-pod-and-service-traffic.md
+    prompt: "A pod connects to the cluster IP of a Service. With Cilium handling Services, where is the Service address replaced by the address of a backend pod?"
+    options:
+      - id: a
+        text: "In an eBPF program, which looks up the Service in a map and selects a backend."
+        explanation: "Correct. The translation is done by eBPF programs, at the socket or at the interface."
+      - id: b
+        text: "On the physical switch between the nodes."
+        explanation: "The switch does not know the Service address."
+      - id: c
+        text: "In the application, which resolves the backend through DNS."
+        explanation: "DNS returns the Service address, and not the backends of a cluster IP."
+      - id: d
+        text: "In the API server, which rewrites each packet."
+        explanation: "The API server does not touch packets."
+    correct_option: a
+    explanation: "Correct. The translation is done by eBPF programs, at the socket or at the interface."
+
+  - id: ats052-010-q06
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Separate Service selection from policy"
+    source_readings:
+      - sections/section-010/module-02/course-01-the-path-of-pod-and-service-traffic.md
+    prompt: "A Service selects three backend pods. A policy denies the client access to the backends. What happens to a request from the client?"
+    options:
+      - id: a
+        text: "The Service ignores the policy and delivers the request."
+        explanation: "Policy applies to traffic through Services as well."
+      - id: b
+        text: "The Service removes the denied backends from its list."
+        explanation: "A policy does not change the backend list."
+      - id: c
+        text: "The request is delivered to a fourth pod that is allowed."
+        explanation: "Traffic is delivered only to selected backends."
+      - id: d
+        text: "The Service chooses a backend, and the policy is checked for the chosen backend, so the request is dropped."
+        explanation: "Correct. Selection and policy are separate steps, and a denying policy blocks the request after selection."
+    correct_option: d
+    explanation: "Correct. Selection and policy are separate steps, and a denying policy blocks the request after selection."
+
+  - id: ats052-010-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain why Cilium policy follows identity and not address"
+    source_readings:
+      - sections/section-010/module-02/course-02-policy-and-identity-based-rules.md
+    prompt: "Why can a Cilium policy that allows a client by label keep working after the client pod is rescheduled and gets a new address?"
+    options:
+      - id: a
+        text: "Because the new pod keeps the old address."
+        explanation: "The address changes after a restart."
+      - id: b
+        text: "Because policy is evaluated only once at the creation of the policy."
+        explanation: "Policy follows endpoints as they appear and disappear."
+      - id: c
+        text: "Because the rule refers to a security identity derived from labels, and the new pod has the same labels and therefore the same identity."
+        explanation: "Correct. Identity is derived from labels, so it does not depend on the address."
+      - id: d
+        text: "Because the operator rewrites the policy on every restart of a pod."
+        explanation: "The policy object is not rewritten."
+    correct_option: c
+    explanation: "Correct. Identity is derived from labels, so it does not depend on the address."
+
+  - id: ats052-010-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe default deny behaviour of an applied policy"
+    source_readings:
+      - sections/section-010/module-02/course-02-policy-and-identity-based-rules.md
+    prompt: "An ingress policy selects the pods with the label `app=probe` and allows one client. What is the effect on other clients that reach `probe`?"
+    options:
+      - id: a
+        text: "They are still allowed, because policy only adds rules."
+        explanation: "A selected endpoint denies traffic that no rule allows."
+      - id: b
+        text: "They are denied for ingress, because a selected endpoint accepts only what a rule allows."
+        explanation: "Correct. Once a policy selects an endpoint for a direction, other traffic in that direction is denied."
+      - id: c
+        text: "They are delayed until the operator approves them."
+        explanation: "There is no approval step."
+      - id: d
+        text: "They are redirected to another pod."
+        explanation: "Policy does not redirect traffic."
+    correct_option: b
+    explanation: "Correct. Once a policy selects an endpoint for a direction, other traffic in that direction is denied."
+
+  - id: ats052-010-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Choose the component that holds the per-node state"
+    source_readings:
+      - sections/section-010/module-01/course-01-what-a-cni-plugin-does.md
+    prompt: "A new pod on one node cannot start, and its events show a network plugin error. All other nodes work. Which component should you check first?"
+    options:
+      - id: a
+        text: "The Cilium agent on that node."
+        explanation: "Correct. The CNI call is answered by the agent of the node that starts the pod."
+      - id: b
+        text: "The Cilium operator."
+        explanation: "The operator does not answer CNI calls."
+      - id: c
+        text: "The Hubble Relay Deployment."
+        explanation: "Relay only reads flows."
+      - id: d
+        text: "The CoreDNS Deployment."
+        explanation: "DNS is not part of the pod sandbox creation."
+    correct_option: a
+    explanation: "Correct. The CNI call is answered by the agent of the node that starts the pod."
+
+  - id: ats052-010-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Read traffic path facts from the agent"
+    source_readings:
+      - sections/section-010/module-02/course-01-the-path-of-pod-and-service-traffic.md
+    prompt: "Which command output proves that the agent has loaded a Service and its backends into its load balancing maps?"
+    options:
+      - id: a
+        text: "`kubectl get nodes` shows the Service backends."
+        explanation: "Nodes do not list Services."
+      - id: b
+        text: "`cilium-dbg identity list` shows the Service backends."
+        explanation: "Identities are not Service entries."
+      - id: c
+        text: "`kubectl get leases` shows the Service backends."
+        explanation: "Leases are for leader election."
+      - id: d
+        text: "`cilium-dbg bpf lb list` and `cilium-dbg service list` show the Service and its backends."
+        explanation: "Correct. These commands read the Service state of the agent."
+    correct_option: d
+    explanation: "Correct. These commands read the Service state of the agent."

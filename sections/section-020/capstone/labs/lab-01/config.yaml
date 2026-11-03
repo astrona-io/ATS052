@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Cilium Architecture Capstone (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-052-lab-020-cap
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: install-cilium-and-seed
+    description: "The CiliumNetworkPolicy `probe-from-clients` allows only `role: client` sources. `shuttle` has no `role` label."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: policy-unchanged-and-shuttle-allowed
+    description: "The policy is unchanged and shuttle reaches probe"
+    type: file
+    source: validation/validate-policy-unchanged-and-shuttle-allowed.sh
+    hint: "Label the pod. Do not edit probe-from-clients."
+  - name: drifter-blocked
+    description: "drifter cannot reach probe"
+    type: file
+    source: validation/validate-drifter-blocked.sh
+    hint: "Only starfleet pods labelled role=client match the policy."
+  - name: evidence-shuttle-identity
+    description: "The report holds the live identity of shuttle after the fix"
+    type: file
+    source: validation/validate-evidence-shuttle-identity.sh
+    hint: "Read status.identity.id of the shuttle CiliumEndpoint after labelling."
+  - name: evidence-probe-identity
+    description: "The report holds the live identity of probe"
+    type: file
+    source: validation/validate-evidence-probe-identity.sh
+    hint: "Read status.identity.id of the probe CiliumEndpoint."
+  - name: evidence-shuttle-endpoint-id
+    description: "The report holds the live endpoint ID of shuttle"
+    type: file
+    source: validation/validate-evidence-shuttle-endpoint-id.sh
+    hint: "Read status.id of the shuttle CiliumEndpoint."
+teardown:
+  keepCluster: false
