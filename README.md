@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://astrona.io/courses/cilium-certified-associate-cca">
+    <img src="https://astrona.io/courses/cilium-certified-associate-cca/domains/ATS052.svg" alt="ATS052: Architecture, part of the Cilium Certified Associate course on Astrona" width="100%">
+  </a>
+</p>
+
 # Architecture (ATS052)
 
 Cilium Certified Associate (CCA): Architecture, worth 20% of the official curriculum. This course belongs to ATP011.
